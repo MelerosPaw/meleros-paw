@@ -43,9 +43,9 @@ public class Path {
     private String mFileName;
 
     /**
-     * Constants beginning with {@code "TYPE"} in {@link #Path} class referencing
-     * predefined folders in external public or private storage directories to be used when
-     * calling {@link Builder#storageDirectory(int, String)}.
+     * Defines constants beginning with {@code "TYPE"} in this class to reference predefined folders
+     * in external public or private storage directories to be used when calling
+     * {@link Builder#storageDirectory(int, String)}.
      */
     @StringDef({TYPE_ALARMS, TYPE_DCIM, TYPE_DOCUMENTS, TYPE_DOWNLOADS, TYPE_MOVIES, TYPE_MUSIC,
             TYPE_NOTIFICATIONS, TYPE_PICTURES, TYPE_PODCASTS, TYPE_RINGTONES})
@@ -54,9 +54,14 @@ public class Path {
     }
 
     /**
-     * External and internal directories available for storage in an Android device:
-     * {@link #STORAGE_PRIVATE_EXTERNAL},
-     * {@link #STORAGE_PUBLIC_EXTERNAL} or {@link #STORAGE_PRIVATE_INTERNAL}.
+     * Defines constants to refer to external and internal directories available for saving/loading
+     * files in an Android device, used when calling {@link Builder#storageDirectory(int, String)}.
+     * These are:
+     * <ul>
+     * <li>{@link #STORAGE_PRIVATE_EXTERNAL}</li>
+     * <li>{@link #STORAGE_PUBLIC_EXTERNAL}</li>
+     * <li>{@link #STORAGE_PRIVATE_INTERNAL}</li>
+     * </ul>
      */
     @IntDef({STORAGE_PUBLIC_EXTERNAL, STORAGE_PRIVATE_EXTERNAL, STORAGE_PRIVATE_INTERNAL})
     @Retention(RetentionPolicy.SOURCE)
@@ -64,9 +69,13 @@ public class Path {
     }
 
     /**
-     * Predefined external directories available for storage in an Android device:
-     * {@link #STORAGE_PREDEFINED_PUBLIC_EXTERNAL} or
-     * {@link #STORAGE_PREDEFINED_PRIVATE_EXTERNAL}.
+     * Defines constants to refer to predefined private/public external directories available for
+     * saving/loading files in an Android device, to be used when calling
+     * {@link Builder#storageDirectory(int, String)}. These are:
+     * <ul>
+     * <li>{@link #STORAGE_PREDEFINED_PUBLIC_EXTERNAL}</li>
+     * <li>{@link #STORAGE_PREDEFINED_PRIVATE_EXTERNAL}.</li>
+     * </ul>
      */
     @IntDef({STORAGE_PREDEFINED_PUBLIC_EXTERNAL, STORAGE_PREDEFINED_PRIVATE_EXTERNAL})
     @Retention(RetentionPolicy.SOURCE)
@@ -156,15 +165,40 @@ public class Path {
         return new File(getPath());
     }
 
+    @Override
+    public String toString() {
+        StringBuilder toString = new StringBuilder();
+        toString.append("BASE PATH: ");
+
+        if (TextUtils.isEmpty(mBasePath)) {
+            toString.append("No base path specified.");
+        } else {
+            toString.append(mBasePath);
+        }
+
+        if (!mFolders.isEmpty()){
+            toString.append("\nFOLDERS: ");
+            for (String folder : mFolders){
+                toString.append("/").append(folder);
+            }
+        }
+
+        if (!TextUtils.isEmpty(mFileName)) {
+            toString.append("\nFILE: ").append("/").append(mFileName);
+        }
+
+        return toString.toString();
+    }
+
+
     /**
-     * Class to build a {@code Path}. You'll need to call at least
+     * <p>Class to build a {@code Path}. You'll need to call at least
      * {@link Builder#storageDirectory} or {@link Builder#databaseDirectory(String)} and,
-     * optionally {@link Builder#folder(String)} and {@link Builder#file(String)}. <br/><br/>
-     * <p/>
-     * E.g.: to create a {@code Path} referencing
-     * <i>data/data/my.application.package/files/customFolder/myFile.txt</i> call:
-     * <br/>
-     * <pre>{@link #Path} myPath = new {@link #Builder}(context)
+     * optionally {@link Builder#folder(String)} and {@link Builder#file(String)}.</p>
+     * <p>E.g.: to create a {@code Path} referencing
+     * <i>data/data/my.application.package/files/customFolder/myFile.txt</i>, call:
+     * </p>
+     * <pre>{@code Path} myPath = new {@link Builder}(context)
      * .storageDirectory(Path.{@link #STORAGE_PRIVATE_INTERNAL})
      * .folder("customFolder")
      * .file("myFile.txt")
@@ -185,12 +219,11 @@ public class Path {
         }
 
         /**
-         * Sets the name of the folders to be appended to the path after the storage directory
+         * <p>Sets the name of the folders to be appended to the path after the storage directory
          * path specified with {@link #storageDirectory(int, String)},
          * {@link #storageDirectory(int)} or {@link #databaseDirectory(String)}. If you want to
          * specify a path with several folders, call this method passing the name of the folders
-         * in the order that will appear in the path. <br/><br/>
-         * <p/>
+         * in the order that will appear in the path.</p>
          * E.g.: to specify path
          * <i>/myFolderA/myFolderB/myFolderC</i>, call
          * {@code builder.folder("myFolderA").folder("myFolderB").folder("myFolderC");}
@@ -214,6 +247,7 @@ public class Path {
             mFileName = fileName;
             return this;
         }
+
 
         /**
          * Sets the base path to one of the application's predefined external directories.
@@ -302,7 +336,6 @@ public class Path {
          *             {@link #TYPE_DCIM}, {@link #TYPE_DOCUMENTS}, {@link #TYPE_DOWNLOADS},
          *             {@link #TYPE_MOVIES}, {@link #TYPE_MUSIC}, {@link #TYPE_NOTIFICATIONS},
          *             {@link #TYPE_PICTURES}, {@link #TYPE_PODCASTS}, {@link #TYPE_RINGTONES}.
-         *             *
          * @return Default implementation returns
          * {@code Environment.getExternalStoragePublicDirectory(type).getPath()}.
          */
@@ -349,7 +382,7 @@ public class Path {
          * Returns the path to the application's private external directory in an Android
          * device.
          *
-         * @param type The destination directory in the private external. Use any of the
+         * @param type The destination directory in the private external memory. Use any of the
          *             following {@code Path}'s constants: {@link #TYPE_ALARMS},
          *             {@link #TYPE_DCIM}, {@link #TYPE_DOCUMENTS}, {@link #TYPE_DOWNLOADS},
          *             {@link #TYPE_MOVIES}, {@link #TYPE_MUSIC}, {@link #TYPE_NOTIFICATIONS},
@@ -380,9 +413,17 @@ public class Path {
 
 
         /**
-         * Returns the {@link Environment} constant for the path to the given predefined
-         * external public/private directory expressed with the {@link ExternalDirectoryType}.
+         * Returns the {@link Environment} constant for the path to the given predefined external
+         * public/private directory expressed with the {@link ExternalDirectoryType}.
+         *
+         * @param type The destination directory in the private external memory. Use any of the
+         *             following {@code Path}'s constants: {@link #TYPE_ALARMS},
+         *             {@link #TYPE_DCIM}, {@link #TYPE_DOCUMENTS}, {@link #TYPE_DOWNLOADS},
+         *             {@link #TYPE_MOVIES}, {@link #TYPE_MUSIC}, {@link #TYPE_NOTIFICATIONS},
+         *             {@link #TYPE_PICTURES}, {@link #TYPE_PODCASTS}, {@link #TYPE_RINGTONES}.
+         * @return The {@link Environment} constant to refer the destination predefined directory.
          */
+
         public String getEnvironmentDirectoryType(@ExternalDirectoryType String type) {
 
             String folderType;
@@ -454,5 +495,29 @@ public class Path {
             return !TextUtils.isEmpty(mBasePath);
         }
 
+        @Override
+        public String toString() {
+            StringBuilder toString = new StringBuilder();
+            toString.append("BASE PATH: ");
+
+            if (TextUtils.isEmpty(mBasePath)) {
+                toString.append("No base path specified.");
+            } else {
+                toString.append(mBasePath);
+            }
+
+            if (!mFolders.isEmpty()){
+                toString.append("\nFOLDERS: ");
+                for (String folder : mFolders){
+                    toString.append("/").append(folder);
+                }
+            }
+
+            if (!TextUtils.isEmpty(mFileName)) {
+                toString.append("\nFILE: ").append("/").append(mFileName);
+            }
+
+            return toString.toString();
+        }
     }
 }

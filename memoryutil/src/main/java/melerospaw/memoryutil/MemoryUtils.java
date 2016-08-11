@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -27,15 +28,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by Juan José Melero on 26/05/2015.<br/><br/>
- * Class to make it easier to save and load from Android device's memory.
+ * <p>Class to make it easier to save and load from an Android device's memory.
  * Use {@link Path.Builder} to create a {@code Path} to call {@code MemoryUtils}' methods.
  * This way, folders will be created automatically when saving.
  * Then use {@link Result} class to retrieve objects from method calls, for example, the
  * {@code File} where something was saved to or the object that you are trying to retrieve from
- * memory.
- * <p>
- * Example code:
+ * memory.</p>
+ *
+ * <p>Example code:</p>
  */
 public class MemoryUtils {
 
@@ -55,7 +55,7 @@ public class MemoryUtils {
     public static final String CLASS_NOT_FOUND = "Couldn't find the class to cast the object stored in %1$s.";
     public static final String CREATED = "Folder %1$s was created.";
     public static final String DELETED_BUT_STILL_NOT_EMPTY = "All files in folder %1$s were deleted but still it's not empty.";
-    public static final String DESTINATION_FOLDER_NOT_FOUND = "Destination folder for %1$s was not found.";
+    public static final String DESTINATION_FOLDER_NOT_FOUND = "Destination folder %1$s was not found.";
     public static final String DIRECTORY_HAS_FILES = "File %1$s is a directory containing other files. It was not deleted. If you want to delete it, pass true as second parameter to method deleteFile().";
     public static final String DOESNT_EXIST = "File %1$s doesn't exist.";
     public static final String ERROR_WHILE_READING = "Error while reading the file %1$s";
@@ -86,6 +86,9 @@ public class MemoryUtils {
     public static final String PREFERENCES_PARTIALLY_RESTORED = "Stored preferences in %1$s could only be partially restored.\n%2$s";
     public static final String ALL_PREFERENCES_RESTORED = "Preferences in %1$s were restored.\n%2$s";
     public static final String NULL_CLASS = "Class to load object from %1$s is null.";
+    public static final String NULL_INPUTSTREAM = "The InputStream provided is null. Cannot copy the file %1$s into %2$s.";
+    public static final String NULL_SHAREDPREFERENCES_BACKUP_PATH = "Path to SharedPreferences backup file is null.";
+    public static final String NULL_SHAREDPREFERENCES_OBJECT = "The SharedPreferences object received is null. Preferences from %1$ cannot be restored.";
 
 
     /**
@@ -101,7 +104,8 @@ public class MemoryUtils {
      * or else {@code null}.
      */
     public static Result<File> copyFromInputStream(@Nullable String originPath,
-                                                   InputStream inputStream, Path destinationPath) {
+                                                   @NonNull InputStream inputStream,
+                                                   @NonNull Path destinationPath) {
 
         String path = createPath(destinationPath);
         return copyFromInputStream(originPath, inputStream, path);
@@ -125,6 +129,14 @@ public class MemoryUtils {
 
         if (originPath == null) {
             originPath = "";
+        }
+
+        if (TextUtils.isEmpty(destinationPath)) {
+            return createResult(null, NULL_DESTINATION_PATH, false, null, " from " + originPath);
+        }
+
+        if (inputStream == null) {
+            return createResult(null, NULL_INPUTSTREAM, false, null, originPath, destinationPath);
         }
 
         OutputStream streamToSaveFile;
@@ -207,11 +219,11 @@ public class MemoryUtils {
 
 
     /**
-     * Imports a file in assets foler to the database folder.
+     * Imports a file in assets folder to the database folder.
      *
      * @param context      Needed to access the database folder.
      * @param databaseName Name of the file in assets. It must be the same as the database name.
-     * @return A {@code Resutl<File>} containing a {@code File} pointing to the file where the
+     * @return A {@code Result<File>} containing a {@code File} pointing to the file where the
      * database has been copied to.
      */
     public static Result<File> importDatabaseFromAssets(Context context, String databaseName) {
@@ -246,14 +258,17 @@ public class MemoryUtils {
      * Saves a text into a file using {@code FileWriter} and {@code BufferedWriter}.
      * It creates the folders necessary for you.
      *
-     * @param text The text to be saved.
-     * @param path The path where the file will be stored. Must include the name of the file.
+     * @param text   The text to be saved.
+     * @param path   The path where the file will be stored. Must include the name of the file.
+     * @param append Pass {@code true} if you want content to be appended at the end of the existing
+     *               file, or {@code false} if you want the existing text to be overwritten by the
+     *               new text.
      * @return A {@code Result<File>} containing the file if it was created or else {@code null}.
      */
-    public static Result<File> saveTextFile(String text, Path path, boolean overwrite) {
+    public static Result<File> saveTextFile(String text, Path path, boolean append) {
 
         String filePath = createPath(path);
-        return saveTextFile(text, filePath, overwrite);
+        return saveTextFile(text, filePath, append);
 
     }
 
@@ -262,14 +277,17 @@ public class MemoryUtils {
      * Saves a text into a file using {@code FileWriter} and {@code BufferedWriter}.
      * The path must exist.
      *
-     * @param text The text to be saved.
-     * @param path The path where the file will be stored. Must include the name of the file.
+     * @param text   The text to be saved.
+     * @param path   The path where the file will be stored. Must include the name of the file.
+     * @param append Pass {@code true} if you want content to be appended at the end of the existing
+     *               file, or {@code false} if you want the existing text to be overwritten by the
+     *               new text.
      * @return A {@code Result<File>} containing the file if it was created or else {@code null}.
      */
-    public static Result<File> saveTextFile(String text, String path, boolean overwrite) {
+    public static Result<File> saveTextFile(String text, String path, boolean append) {
 
         if (path == null) {
-            return createResult(null, NULL_DESTINATION_PATH, false, null);
+            return createResult(null, NULL_DESTINATION_PATH, false, null, "the input text");
         }
 
         if (text == null) {
@@ -280,7 +298,7 @@ public class MemoryUtils {
         FileWriter fileWriter;
 
         try {
-            fileWriter = new FileWriter(destinationFile, overwrite);
+            fileWriter = new FileWriter(destinationFile, append);
         } catch (IOException e) {
             return createResult(null, DESTINATION_FOLDER_NOT_FOUND, false, e, path);
         }
@@ -366,7 +384,7 @@ public class MemoryUtils {
     public static Result<File> saveObject(Object object, String destinationPath) {
 
         if (destinationPath == null) {
-            return createResult(null, NULL_DESTINATION_PATH, false, null);
+            return createResult(null, NULL_DESTINATION_PATH, false, null, "the given object");
         }
 
         if (object == null) {
@@ -514,7 +532,7 @@ public class MemoryUtils {
      * @param sharedPreferences Object containing the preferences to be saved.
      * @param destinationPath   Path to the file were the preferences will be saved. Don't assign an
      *                          extension to the file name.
-     * @return A{@code Result<File>} containin the {@code File} where the mapped preferences are
+     * @return A{@code Result<File>} containing the {@code File} where the mapped preferences are
      * stored.
      */
     public static Result<File> saveSharedPreferences(SharedPreferences sharedPreferences,
@@ -579,7 +597,9 @@ public class MemoryUtils {
      * Retrieves a {@code Map<String, Object>} object with mapped shared preferences stored
      * previously in a file and loads them in the given {@code SharedPreferences} object.
      *
-     * @param originPath {@code Path} object pointing to the file were the preferences were saved.
+     * @param originPath        {@code Path} object pointing to the file were the preferences were saved.
+     * @param sharedPreferences The {@code SharedPreferences} object where the preferences will be
+     *                          restored to.
      * @return A {@code Result<Map<String, Object>>} containing the mapped shared preferences.
      */
     public static Result<SharedPreferences> loadSharedReferences(Path originPath,
@@ -592,12 +612,23 @@ public class MemoryUtils {
      * Retrieves a {@code Map<String, Object>} object with mapped shared preferences stored
      * previously in a file and loads them in the given {@code SharedPreferences} object.
      *
-     * @param originPath Path to the file were the preferences were saved.
+     * @param pathToSharedPreferencesBackUp        Path to the file were the preferences were saved.
+     * @param sharedPreferences The {@code SharedPreferences} object where the preferences will be
+     *                          restored to.
      * @return A {@code Result<Map<String, Object>>} containing the mapped shared preferences.
      */
-    public static Result<SharedPreferences> loadSharedReferences(String originPath,
-                                                                 SharedPreferences sharedPreferences) {
-        Result<Map<String, Object>> result = loadSharedPreferences(originPath);
+    public static Result<SharedPreferences> loadSharedReferences(@NonNull String pathToSharedPreferencesBackUp,
+                                                                 @NonNull SharedPreferences sharedPreferences) {
+
+        if (pathToSharedPreferencesBackUp == null) {
+            return createResult(null, NULL_SHAREDPREFERENCES_BACKUP_PATH, false, null);
+        }
+
+        if (sharedPreferences == null){
+            return createResult(null, NULL_SHAREDPREFERENCES_OBJECT, false, null, pathToSharedPreferencesBackUp);
+        }
+
+        Result<Map<String, Object>> result = loadSharedPreferences(pathToSharedPreferencesBackUp);
 
         String message;
         boolean success;
@@ -664,13 +695,13 @@ public class MemoryUtils {
             Log.e(TAG, preferencesSummary);
         }
 
-        return createResult(sharedPreferences, message, success, null, originPath,
+        return createResult(sharedPreferences, message, success, null, pathToSharedPreferencesBackUp,
                 preferencesSummary);
     }
 
 
     /**
-     * Checks whether a a file exists or not. </i>
+     * Checks whether a file exists or not.
      *
      * @param path {@code Path} to the file to be checked.
      * @return {@code true} if the file exists or else {@code false}.
@@ -679,8 +710,9 @@ public class MemoryUtils {
         return exists(path.getPath());
     }
 
+
     /**
-     * Checks whether a a file exists or not. </i>
+     * Checks whether a file exists or not.
      *
      * @param path Path to the file to be checked.
      * @return {@code true} if the file exists or else {@code false}.
@@ -690,6 +722,7 @@ public class MemoryUtils {
         return file.exists();
     }
 
+
     /**
      * Duplicates a file. Creates the destination folders for you.
      *
@@ -698,7 +731,8 @@ public class MemoryUtils {
      * @return A {@code Result} containing the duplicated {@code File} or null if duplication was
      * not possible.
      */
-    public static Result<File> duplicateFile(Path originPath, Path destinationPath) {
+    public static Result<File> duplicateFile(@NonNull Path originPath,
+                                             @NonNull Path destinationPath) {
         String path = createPath(destinationPath);
         return duplicateFile(originPath.getPath(), path);
     }
@@ -737,22 +771,28 @@ public class MemoryUtils {
     /**
      * Deletes the file in {@code path}.
      *
-     * @param path Path to the file.
+     * @param path                    Path to the file.
+     * @param clearContentIfDirectory If {@code path} refers to a folder, {@code true} will delete
+     *                                every file in the folder in order to delete the folder. If
+     *                                {@code false} the folder and its content will be kept.
      * @return A {@code Result} returning {@code isSuccessful() == true} if the file could be
      * deleted.
      */
-    public static Result deleteFile(Path path, boolean deleteContentIfDirectory) {
-        return deleteFile(path.getPath(), deleteContentIfDirectory);
+    public static Result deleteFile(Path path, boolean clearContentIfDirectory) {
+        return deleteFile(path.getPath(), clearContentIfDirectory);
     }
+
 
     /**
      * Deletes the file in {@code path}. If it's a folder, deletes its content only if
      * {@code clearContentIfDirectory} is {@code true}.
      *
      * @param path                    Path to the file.
-     * @param clearContentIfDirectory If true and file in {@code path} is a directory, its content
-     *                                will be deleted. Else, deleting will stop.
-     * @return
+     * @param clearContentIfDirectory If {@code path} refers to a folder, {@code true} will delete
+     *                                every file in the folder in order to delete the folder. If
+     *                                {@code false} the folder and its content will be kept.
+     * @return A {@code Result} containing nothing but {@code true} or {@code false} in you call
+     * method {@link Result#isSuccessful()} on it depending on whether the file was deleted or not.
      */
     public static Result deleteFile(String path, boolean clearContentIfDirectory) {
 
@@ -798,6 +838,7 @@ public class MemoryUtils {
             }
         }
     }
+
 
     /**
      * Deletes the content of a folder. If one of the files cannot be deleted, stops deleting.
@@ -846,12 +887,13 @@ public class MemoryUtils {
         return isFolderEmpty(folder, false);
     }
 
+
     /**
-     * Returns true if the folder was cleared
+     * Returns {@code true} if the folder was cleared
      *
-     * @param folder The folder to be checked.
-     * @param folder Pass false if you're calling this method on your own. This method only receives
-     *               true when called from {@link #clearFolder(String)}.
+     * @param folder         The folder to be checked.
+     * @param hasBeenCleared Pass false if you're calling this method on your own. This method only
+     *                       receives {@code true} when called from {@link #clearFolder(String)}.
      * @return {@code true} if the folder is empty or {@code false} if it's not empty or it's not
      * a directory.
      */
@@ -891,6 +933,7 @@ public class MemoryUtils {
         return false;
     }
 
+
     /**
      * Creates folder {@code pathToFolder}.
      *
@@ -913,6 +956,7 @@ public class MemoryUtils {
             }
         }
     }
+
 
     /**
      * Creates the folders necessary to generate the path.
@@ -947,7 +991,7 @@ public class MemoryUtils {
 
 
     /**
-     * Creates a {@code Result} object with the object resulting from a call to a
+     * Creates a {@link Result} object with the object resulting from a call to a
      * {@code MemoryUtils}' method specified. It will format the message and log it.
      *
      * @param object           The object resulting from the call to the {@code MemoryUtils}'
@@ -962,10 +1006,11 @@ public class MemoryUtils {
      *                         if the message needs not be formatted.
      * @param <T>              The type of object resulting from the call to the
      *                         {@code MemoryUtils}' method.
-     * @return The {@code Result<T>} o bject created.
+     * @return The {@code Result<T>} object created.
      */
-    private static <T> Result<T> createResult(T object, String message, boolean success,
-                                              @Nullable Exception e, String... formatParameters) {
+    private static <T> Result<T> createResult(@Nullable T object, @NonNull String message,
+                                              boolean success, @Nullable Exception e,
+                                              String... formatParameters) {
         String formattedMessage;
         if (formatParameters.length > 0) {
             formattedMessage = String.format(message, formatParameters);
