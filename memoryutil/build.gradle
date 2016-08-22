@@ -4,7 +4,7 @@ ext {
     bintrayRepo = 'maven'
     bintrayName = 'memory-util'
 
-    publishedGroupId = 'meleros-paw'
+    publishedGroupId = 'com.meleros-paw'
     libraryName = 'Utils'
     artifact = 'memoryutil'
 
@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/Triodesabios/meleros-paw'
     gitUrl = 'https://github.com/Triodesabios/meleros-paw.git'
 
-    libraryVersion = '0.0.2'
+    libraryVersion = '0.0.2-beta'
 
     developerId = 'Triodesabios'
     developerName = 'Juan José Melero'

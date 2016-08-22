@@ -155,6 +155,21 @@ public class Path {
         return stringBuilder.toString();
     }
 
+
+    /**
+     * Returns the path from a {@code Path} object or an empty {@code String} if the Path is
+     * null.
+     *
+     * @param path {@code Path} object to get the path from.
+     * @return The path resulting from calling {@link #getPath()} or an empty String if it's
+     * null.
+     */
+    static String getPathOrEmpty(Path path) {
+        return path != null && !TextUtils.isEmpty(path.getPath()) ?
+                path.getPath() : "";
+    }
+
+
     /**
      * Returns a {@code File} pointing to the path contained in this {@code Path} object
      * specified with {@link Builder#file(String)} during the bulding process.
@@ -176,9 +191,9 @@ public class Path {
             toString.append(mBasePath);
         }
 
-        if (!mFolders.isEmpty()){
+        if (!mFolders.isEmpty()) {
             toString.append("\nFOLDERS: ");
-            for (String folder : mFolders){
+            for (String folder : mFolders) {
                 toString.append("/").append(folder);
             }
         }
@@ -260,8 +275,8 @@ public class Path {
         public Builder storageDirectory(@PredefinedDirectory int directory,
                                         @ExternalDirectoryType String type) {
             if (type == null) {
-                Log.e(TAG, "To use a predefined external directory, you must specify" +
-                        "which one using Environment constants.");
+                log("To use a predefined external directory, you must specify which one using" +
+                        " Environment constants.", false);
                 mBasePath = "";
 
             } else {
@@ -344,7 +359,7 @@ public class Path {
                 return Environment.getExternalStoragePublicDirectory(
                         getEnvironmentDirectoryType(type)).getPath();
             } else {
-                Log.e(TAG, "External memory is not available.");
+                log("External memory is not available.", false);
                 return "";
             }
         }
@@ -372,7 +387,7 @@ public class Path {
             if (MemoryUtils.isExternalMemoryAvailable()) {
                 return context.getExternalFilesDir(null).getPath();
             } else {
-                Log.e(TAG, "External memory is not available.");
+                log("External memory is not available.", false);
                 return "";
             }
         }
@@ -394,7 +409,7 @@ public class Path {
             if (MemoryUtils.isExternalMemoryAvailable()) {
                 return context.getExternalFilesDir(getEnvironmentDirectoryType(type)).getPath();
             } else {
-                Log.e(TAG, "External memory is not available.");
+                log("External memory is not available.", false);
                 return "";
             }
         }
@@ -475,12 +490,12 @@ public class Path {
                 Path path = new Path(mBasePath);
                 path.setFolders(mFolders);
                 path.setFileName(TextUtils.isEmpty(mFileName) ? "" : mFileName);
-                Log.i(TAG, String.format("Path object pointing to %1$s was created.", path.getPath()));
+                log(String.format("Path object pointing to %1$s was created.", path.getPath()), true);
                 return path;
             } else {
-                Log.e(TAG, "No base path has been specified. You must explicitly call" +
+                log("No base path has been specified. You must explicitly call" +
                         "Builder.storageDirectory() or Builder.databaseDirectory(). to" +
-                        "specify a base directory.");
+                        "specify a base directory.", false);
                 return null;
             }
         }
@@ -495,6 +510,7 @@ public class Path {
             return !TextUtils.isEmpty(mBasePath);
         }
 
+
         @Override
         public String toString() {
             StringBuilder toString = new StringBuilder();
@@ -506,9 +522,9 @@ public class Path {
                 toString.append(mBasePath);
             }
 
-            if (!mFolders.isEmpty()){
+            if (!mFolders.isEmpty()) {
                 toString.append("\nFOLDERS: ");
-                for (String folder : mFolders){
+                for (String folder : mFolders) {
                     toString.append("/").append(folder);
                 }
             }
@@ -519,5 +535,9 @@ public class Path {
 
             return toString.toString();
         }
+    }
+
+    private static void log(String message, boolean isSuccess) {
+        Logger.log(TAG, message, isSuccess);
     }
 }

@@ -8,7 +8,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -41,6 +40,7 @@ public class MemoryUtils {
 
     private static final String TAG = MemoryUtils.class.getSimpleName();
 
+    public static final String ALL_PREFERENCES_RESTORED = "Preferences in %1$s were restored.\n%2$s";
     public static final String ALREADY_EXISTS = "Folder %1$s already exists.";
     public static final String ASSET_NOT_FOUND = "File %1$s was not found in assets directory.";
     public static final String BYTE_ARRAY_SAVED = "Byte array saved to %1$s.";
@@ -58,37 +58,39 @@ public class MemoryUtils {
     public static final String DESTINATION_FOLDER_NOT_FOUND = "Destination folder %1$s was not found.";
     public static final String DIRECTORY_HAS_FILES = "File %1$s is a directory containing other files. It was not deleted. If you want to delete it, pass true as second parameter to method deleteFile().";
     public static final String DOESNT_EXIST = "File %1$s doesn't exist.";
+    public static final String EMPTY_DESTINATION_PATH = "Path provided to %1$s to is empty.";
+    public static final String EMPTY_ORIGIN_PATH = "Path provided to %1$s from is empty.";
     public static final String ERROR_WHILE_READING = "Error while reading the file %1$s";
     public static final String ERROR_WHILE_WRITING = "Error writing the file %1$s";
-    public static final String FILENAME_NULL = "The file name is null.";
+    public static final String FILENAME_EMPTY = "The file name to %1$s is empty.";
+    public static final String FILENAME_NULL = "The file name to %1$s is null.";
     public static final String FILE_COPIED = "File %1$s was copied to %2$s.";
     public static final String FILE_DELETED = "File %1$s was deleted.";
     public static final String FILE_LOADED = "File %1$s was loaded.";
     public static final String FILE_NOT_FOUND = "Destination path %1$s couldn't be found.";
     public static final String FOLDER_CLEARED = "Folder %1$s was cleared.";
     public static final String FOLDER_DELETED = "Folder %1$s was deleted.";
+    public static final String FOLDER_IS_NOT_EMPTY = "Folder %1$s is not empty.";
     public static final String FOLDER_NOT_CLEARED = "File %1$s was a folder but could not be cleared.";
     public static final String FOLDER_NOT_DELETED = "Folder %1$s could not be deleted.";
+    public static final String NOT_A_DIRECTORY = "File %1$s is not a directory.";
     public static final String NOT_SERIALIZABLE = "Cannot save object because it's not serializable.";
-    public static final String NULL_DELETE_PATH = "Path %1$s to delete file is null.";
-    public static final String NULL_DESTINATION_PATH = "Destination path to save file is null.";
+    public static final String NO_PREFERENCES_RESTORED = "No preferences at all were restored from %1$s.\n%2$s";
+    public static final String NULL_CLASS = "Class to load object from %1$s is null.";
+    public static final String NULL_DELETE_PATH = "Path provided to delete is null.";
+    public static final String NULL_DESTINATION_PATH = "Destination path to %1$s to is null.";
+    public static final String NULL_INPUTSTREAM = "The InputStream provided is null. Cannot copy the file %1$s into %2$s.";
     public static final String NULL_OBJECT = "Object to be saved is null.";
-    public static final String NULL_ORIGIN_PATH = "Origin path is null.";
+    public static final String NULL_ORIGIN_PATH = "Origin path provided to %1$s is null.";
+    public static final String NULL_SHAREDPREFERENCES_BACKUP_PATH = "Path to SharedPreferences backup file is null.";
+    public static final String NULL_SHAREDPREFERENCES_OBJECT = "The SharedPreferences object received is null. Preferences from %1$ cannot be restored.";
     public static final String NULL_TEXT = "Text to be saved is null.";
     public static final String OBJECT_LOADED = "Object retrieved from %1$s.";
     public static final String OBJECT_SAVED = "Object saved to %1$s.";
     public static final String ORIGIN_FILE_NOT_FOUND = "Origin file %1$s was not found.";
-    public static final String TEXT_FILE_SAVED = "Text was saved to %1$s.";
-    public static final String NOT_A_DIRECTORY = "File %1$s is not a directory.";
-    public static final String FOLDER_IS_NOT_EMPTY = "Folder %1$s is not empty.";
-    public static final String SHARED_PREFERENCES_NOT_RESTORED = "Could not be restore preferences from %1$s.";
-    public static final String NO_PREFERENCES_RESTORED = "No preferences at all were restored from %1$s.\n%2$s";
     public static final String PREFERENCES_PARTIALLY_RESTORED = "Stored preferences in %1$s could only be partially restored.\n%2$s";
-    public static final String ALL_PREFERENCES_RESTORED = "Preferences in %1$s were restored.\n%2$s";
-    public static final String NULL_CLASS = "Class to load object from %1$s is null.";
-    public static final String NULL_INPUTSTREAM = "The InputStream provided is null. Cannot copy the file %1$s into %2$s.";
-    public static final String NULL_SHAREDPREFERENCES_BACKUP_PATH = "Path to SharedPreferences backup file is null.";
-    public static final String NULL_SHAREDPREFERENCES_OBJECT = "The SharedPreferences object received is null. Preferences from %1$ cannot be restored.";
+    public static final String SHARED_PREFERENCES_NOT_RESTORED = "Could not be restore preferences from %1$s.";
+    public static final String TEXT_FILE_SAVED = "Text was saved to %1$s.";
 
 
     /**
@@ -125,19 +127,18 @@ public class MemoryUtils {
      * or else {@code null}.
      */
     public static Result<File> copyFromInputStream(@Nullable String originPath,
-                                                   InputStream inputStream, String destinationPath) {
+                                                   @NonNull InputStream inputStream,
+                                                   @NonNull String destinationPath) {
 
-        if (originPath == null) {
-            originPath = "";
-        }
-
-        if (TextUtils.isEmpty(destinationPath)) {
-            return createResult(null, NULL_DESTINATION_PATH, false, null, " from " + originPath);
-        }
-
-        if (inputStream == null) {
+        if (destinationPath == null) {
+            return createResult(null, NULL_DESTINATION_PATH, false, null, " copy " + originPath);
+        } else if (destinationPath.isEmpty()) {
+            return createResult(null, EMPTY_DESTINATION_PATH, false, null, " copy " + originPath);
+        } else if (inputStream == null) {
             return createResult(null, NULL_INPUTSTREAM, false, null, originPath, destinationPath);
         }
+
+        originPath = TextUtils.isEmpty(originPath) ? "" : originPath;
 
         OutputStream streamToSaveFile;
         try {
@@ -199,11 +200,13 @@ public class MemoryUtils {
     public static Result<File> copyFromAssets(@NonNull Context context, @NonNull String fileName,
                                               @NonNull String destinationPath) {
         if (fileName == null) {
-            return createResult(null, FILENAME_NULL, false, null);
-        }
-
-        if (destinationPath == null) {
-            return createResult(null, NULL_DESTINATION_PATH, false, null);
+            return createResult(null, FILENAME_NULL, false, null, "copy from assets");
+        } else if (fileName.isEmpty()) {
+            return createResult(null, FILENAME_EMPTY, false, null, "copy from assets");
+        } else if (destinationPath == null) {
+            return createResult(null, NULL_DESTINATION_PATH, false, null, "copy " + fileName + " from assets");
+        } else if (destinationPath.isEmpty()) {
+            return createResult(null, EMPTY_DESTINATION_PATH, false, null, "copy " + fileName + " from assets");
         }
 
         InputStream streamToAssets;
@@ -247,7 +250,7 @@ public class MemoryUtils {
         try {
             return BitmapFactory.decodeStream(context.getAssets().open(imageFileName));
         } catch (IOException e) {
-            Log.e(TAG, "Image was not found in assets.");
+            log("Image was not found in assets.", false);
             e.printStackTrace();
             return null;
         }
@@ -287,10 +290,10 @@ public class MemoryUtils {
     public static Result<File> saveTextFile(String text, String path, boolean append) {
 
         if (path == null) {
-            return createResult(null, NULL_DESTINATION_PATH, false, null, "the input text");
-        }
-
-        if (text == null) {
+            return createResult(null, NULL_DESTINATION_PATH, false, null, "save the input text");
+        } else if (path.isEmpty()) {
+            return createResult(null, EMPTY_DESTINATION_PATH, false, null, "save the input text");
+        } else if (text == null) {
             return createResult(null, NULL_TEXT, false, null);
         }
 
@@ -316,6 +319,7 @@ public class MemoryUtils {
 
     }
 
+
     /**
      * Loads a text file from the given path.
      *
@@ -324,7 +328,8 @@ public class MemoryUtils {
      * content.
      */
     public static Result<String> loadTextFile(Path path) {
-        return loadTextFile(path.getPath());
+        String checkedPath = Path.getPathOrEmpty(path);
+        return loadTextFile(checkedPath);
     }
 
     /**
@@ -334,7 +339,13 @@ public class MemoryUtils {
      * @return Null if the file could not be found or read, or else a {@code String} with the
      * content.
      */
-    public static Result<String> loadTextFile(String path) {
+    public static Result<String> loadTextFile(@NonNull String path) {
+
+        if (path == null) {
+            return createResult(null, NULL_ORIGIN_PATH, false, null, "retrieve text file");
+        } else if (path.isEmpty()) {
+            return createResult(null, EMPTY_ORIGIN_PATH, false, null, "retrieve text file");
+        }
 
         FileReader fileReader;
 
@@ -381,17 +392,15 @@ public class MemoryUtils {
      * @return A {@code Result<File>} containing the file where the object has been saved or else
      * {@code null}.
      */
-    public static Result<File> saveObject(Object object, String destinationPath) {
+    public static Result<File> saveObject(@NonNull Object object, @NonNull String destinationPath) {
 
         if (destinationPath == null) {
-            return createResult(null, NULL_DESTINATION_PATH, false, null, "the given object");
-        }
-
-        if (object == null) {
+            return createResult(null, NULL_DESTINATION_PATH, false, null, "save the given object");
+        } else if (destinationPath.isEmpty()) {
+            return createResult(null, EMPTY_DESTINATION_PATH, false, null, "save the given object");
+        } else if (object == null) {
             return createResult(null, NULL_OBJECT, false, null);
-        }
-
-        if (!(object instanceof Serializable)) {
+        } else if (!(object instanceof Serializable)) {
             return createResult(null, NOT_SERIALIZABLE, false, null);
         }
 
@@ -403,7 +412,6 @@ public class MemoryUtils {
         } catch (FileNotFoundException e) {
             return createResult(null, DESTINATION_FOLDER_NOT_FOUND, false, e, destinationPath);
         }
-
 
         ObjectOutputStream objectStreamToFile;
         try {
@@ -445,13 +453,13 @@ public class MemoryUtils {
      * @return A {@code Result} containing the the object retrieved or null if it couldn't be
      * retrieved.
      */
-    public static <T> Result<T> loadObject(String path, Class<T> clazz) {
+    public static <T> Result<T> loadObject(@NonNull String path, @NonNull Class<T> clazz) {
 
         if (path == null) {
-            return createResult(null, NULL_ORIGIN_PATH, false, null);
-        }
-
-        if (clazz == null) {
+            return createResult(null, NULL_ORIGIN_PATH, false, null, "load the object");
+        } else if (path.isEmpty()) {
+            return createResult(null, EMPTY_ORIGIN_PATH, false, null, "load the object");
+        } else if (clazz == null) {
             return createResult(null, NULL_CLASS, false, null, path);
         }
 
@@ -612,9 +620,9 @@ public class MemoryUtils {
      * Retrieves a {@code Map<String, Object>} object with mapped shared preferences stored
      * previously in a file and loads them in the given {@code SharedPreferences} object.
      *
-     * @param pathToSharedPreferencesBackUp        Path to the file were the preferences were saved.
-     * @param sharedPreferences The {@code SharedPreferences} object where the preferences will be
-     *                          restored to.
+     * @param pathToSharedPreferencesBackUp Path to the file were the preferences were saved.
+     * @param sharedPreferences             The {@code SharedPreferences} object where the preferences will be
+     *                                      restored to.
      * @return A {@code Result<Map<String, Object>>} containing the mapped shared preferences.
      */
     public static Result<SharedPreferences> loadSharedReferences(@NonNull String pathToSharedPreferencesBackUp,
@@ -624,7 +632,7 @@ public class MemoryUtils {
             return createResult(null, NULL_SHAREDPREFERENCES_BACKUP_PATH, false, null);
         }
 
-        if (sharedPreferences == null){
+        if (sharedPreferences == null) {
             return createResult(null, NULL_SHAREDPREFERENCES_OBJECT, false, null, pathToSharedPreferencesBackUp);
         }
 
@@ -691,8 +699,6 @@ public class MemoryUtils {
                     message = PREFERENCES_PARTIALLY_RESTORED;
                 }
             }
-
-            Log.e(TAG, preferencesSummary);
         }
 
         return createResult(sharedPreferences, message, success, null, pathToSharedPreferencesBackUp,
@@ -749,11 +755,13 @@ public class MemoryUtils {
                                              @NonNull String destinationPath) {
 
         if (originPath == null) {
-            return createResult(null, NULL_ORIGIN_PATH, false, null);
-        }
-
-        if (destinationPath == null) {
-            return createResult(null, NULL_DESTINATION_PATH, false, null);
+            return createResult(null, NULL_ORIGIN_PATH, false, null, "duplicate the file");
+        } else if (originPath.isEmpty()) {
+            return createResult(null, EMPTY_ORIGIN_PATH, false, null, "duplicate the file");
+        } else if (destinationPath == null) {
+            return createResult(null, NULL_DESTINATION_PATH, false, null, "duplicate file " + originPath);
+        } else if (destinationPath.isEmpty()) {
+            return createResult(null, EMPTY_DESTINATION_PATH, false, null, "duplicate file " + originPath);
         }
 
         FileInputStream streamToOriginFile;
@@ -860,22 +868,22 @@ public class MemoryUtils {
                         boolean folderDeleted = clearFolder(file.getPath());
                         // If the content couldn't be deleted, returns false
                         if (!folderDeleted) {
-                            Log.e(TAG, String.format(CANNOT_DELETE, file.getPath()));
+                            log(String.format(CANNOT_DELETE, file.getPath()), false);
                             return false;
                             // If the content was deleted, logs it.
                         } else {
-                            Log.i(TAG, String.format(FILE_DELETED, file.getPath()));
+                            log(String.format(FILE_DELETED, file.getPath()), true);
                         }
                         // If some of the files are just files, deletes them
                     } else {
                         boolean fileDeleted = file.delete();
                         // If the file could not be deleted, returns false and stops deleting
                         if (!fileDeleted) {
-                            Log.e(TAG, String.format(CANNOT_DELETE, file.getPath()));
+                            log(String.format(CANNOT_DELETE, file.getPath()), false);
                             return false;
                         } else {
                             // If the file was deleted, logs it
-                            Log.i(TAG, String.format(FILE_DELETED, file.getPath()));
+                            log(String.format(FILE_DELETED, file.getPath()), true);
                         }
                     }
                 }
@@ -900,19 +908,19 @@ public class MemoryUtils {
     public static boolean isFolderEmpty(File folder, boolean hasBeenCleared) {
 
         if (!folder.isDirectory()) {
-            Log.e(TAG, String.format(NOT_A_DIRECTORY, folder.getPath()));
+            log(String.format(NOT_A_DIRECTORY, folder.getPath()), false);
             return false;
         }
 
         boolean isEmpty = folder.list().length == 0;
         if (!isEmpty) {
             if (hasBeenCleared) {
-                Log.e(TAG, String.format(DELETED_BUT_STILL_NOT_EMPTY, folder.getPath()));
+                log(String.format(DELETED_BUT_STILL_NOT_EMPTY, folder.getPath()), false);
             } else {
-                Log.i(TAG, String.format(FOLDER_IS_NOT_EMPTY, folder.getPath()));
+                log(String.format(FOLDER_IS_NOT_EMPTY, folder.getPath()), true);
             }
         } else {
-            Log.i(TAG, String.format(FOLDER_CLEARED, folder.getPath()));
+            log(String.format(FOLDER_CLEARED, folder.getPath()), true);
         }
         return isEmpty;
     }
@@ -929,7 +937,7 @@ public class MemoryUtils {
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             return true;
         }
-        Log.e(TAG, "External memory is not available.");
+        log("External memory is not available.", false);
         return false;
     }
 
@@ -966,6 +974,10 @@ public class MemoryUtils {
      */
     public static String createPath(Path path) {
 
+        if (path == null) {
+            return null;
+        }
+
         if (!path.getFolders().isEmpty()) {
 
             String basePath = path.getBasePath();
@@ -981,9 +993,9 @@ public class MemoryUtils {
                 }
             }
 
-            Log.i(TAG, "Folders " + path.getFolders().toString() + " were created or already existed.");
+            log("Folders " + path.getFolders().toString() + " were created or already existed.", true);
         } else {
-            Log.i(TAG, "The path contained no folders. No folders have been created.");
+            log("The path contained no folders. No folders have been created.", true);
         }
 
         return path.getPath();
@@ -1023,16 +1035,35 @@ public class MemoryUtils {
         result.setSuccessful(success);
         result.setMessage(formattedMessage);
 
-        if (success) {
-            Log.i(TAG, formattedMessage);
-        } else {
-            Log.e(TAG, formattedMessage);
-        }
+        log(formattedMessage, success);
 
         if (e != null) {
             e.printStackTrace();
         }
 
         return result;
+    }
+
+    /**
+     * Enables or disables displaying information in the logging. The tag used is "MemoryUtils".
+     * Logging is enabled by default.
+     *
+     * @param enable Sets the debugging to {@code true} or {@code false} depending on the value of
+     *               {@code enable}.
+     */
+    public static void setLoggingEnabled(boolean enable) {
+        Logger.setLoggingEnabled(enable);
+    }
+
+    /**
+     * This method uses {@link Logger#log} to log messages. Logs using this method will not be
+     * shown if you disabled logging by calling {@link #setLoggingEnabled(boolean)} passing
+     * {@code false.}
+     *
+     * @param message   The message to be displayed.
+     * @param isSuccess If {@code true}, {@code Log.i()} will be used. Else, {@code Log.e()} will.
+     */
+    private static void log(String message, boolean isSuccess) {
+        Logger.log(TAG, message, isSuccess);
     }
 }
