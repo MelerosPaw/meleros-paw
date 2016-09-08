@@ -10,7 +10,7 @@ Add the library to your proyect from JCenter by including this line to your modu
 
 `compile 'com.meleros-paw:memoryutil:0.0.2-beta'`
 
-Then you can start calling _MemoryUtils_' methods passing a _Path_ to the files needed. Methods will then return a _Result_ object containing a boolean to tell you whether the operation was successful or not, and the objects requested. Here's a quick example about how to save an object:
+Then you can start calling _MemoryUtils_' methods passing a _Path_ to the files needed. Methods will then return a _Result_ containing a boolean to tell you whether the operation was successful or not, and the objects requested. Here's a quick example about how to save an object:
 
     CustomObject myCustomObject;
 
