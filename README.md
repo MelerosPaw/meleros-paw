@@ -6,7 +6,7 @@ MemoryUtils consists of a set of methods to perform a variety of recurrent opera
 
 # How To Use The Library
 
-Add the library to your proyect from jCenter adding this line to your module's _build.gradle_ file:
+Add the library to your proyect from JCenter by including this line to your module's _build.gradle_ file:
 
 `compile 'com.meleros-paw:memoryutil:0.0.2-beta'`
 
