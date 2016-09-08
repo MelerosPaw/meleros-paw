@@ -38,4 +38,4 @@ Currently this library has methods to perform the following operations:
 - Printing a folder's file tree
 - Checking if external memory is available
 
-See [Hot To Create Path Objects](https://github.com/Triodesabios/meleros-paw/wiki/1.-How-To-Create-Path-Objects) to learn how to create _Path_ objects; and [Functions](https://github.com/Triodesabios/meleros-paw/wiki/Functions) to learn how to use them.
+See [How To Create Path Objects](https://github.com/Triodesabios/meleros-paw/wiki/1.-How-To-Create-Path-Objects) and then [Functions](https://github.com/Triodesabios/meleros-paw/wiki/Functions) to learn what you can do with them.
