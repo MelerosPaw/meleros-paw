@@ -1,16 +1,16 @@
 # We're still testing!!
 
-# Adding the Library
-
-Add the library to your proyect from jCenter adding this line to your _module's build.gradle_ file:
-
-`compile 'com.meleros-paw:memoryutil:0.0.2-beta'`
-
 # MemoryUtils
 
 MemoryUtils consists of a set of methods to perform a variety of recurrent operations to deal with files in an Android device. It can be used to easily copy, save, delete files and objects forgetting about having to deal with those _Input/OutputStreams_ issues that crowd your code with `try/catch` blocks, making it unreadable.
 
-All you have to care about is indicating the path to the files and calling the corresponding method. They will return a _Result_ object containing a boolean to tell you whether the operation was successful or not, and the objects requested. Here's a quick example about how to save an object:
+# How To Use The Library
+
+Add the library to your proyect from jCenter adding this line to your module's _build.gradle_ file:
+
+`compile 'com.meleros-paw:memoryutil:0.0.2-beta'`
+
+Then you can start calling _MemoryUtils_' methods passing a _Path_ to the files needed. Methods will then return a _Result_ object containing a boolean to tell you whether the operation was successful or not, and the objects requested. Here's a quick example about how to save an object:
 
     CustomObject myCustomObject;
 
