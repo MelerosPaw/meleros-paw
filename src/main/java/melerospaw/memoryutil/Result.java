@@ -1,5 +1,8 @@
 package melerospaw.memoryutil;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 /**
  * <p>Contains the result of  calling a method from {@link MemoryUtils}.</p>
  * <p><b>Fields:</b></p>
@@ -19,6 +22,7 @@ package melerospaw.memoryutil;
  */
 public class Result<T> {
 
+    public static final String TAG = MemoryUtils.class.getSimpleName();
     private boolean successful;
     private T result;
     private String message;
@@ -76,5 +80,148 @@ public class Result<T> {
 
     void setMessage(String message) {
         this.message = message;
+    }
+
+    /**
+     * Creates a {@link Result} object with the object resulting from a call to a
+     * {@code MemoryUtils}' method specified. It will format the message and log it.
+     *
+     * @param object           The object resulting from the call to the {@code MemoryUtils}'
+     *                         method.
+     * @param whatYouWantedToDo          The error/success message resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     * @param success          Pass {@code true} if the call to the {@code MemoryUtils}' method was
+     *                         successful or else {@code false}.
+     * @param exception        The exception resulting from the call to the {@code MemoryUtils}'
+     *                         method Pass {@code null} if no exception was thrown.
+     * @param formatParameters The parameters necessary to format the message. Pass empty in place
+     *                         of the parameters that won't be specified.
+     * @param <T>              The type of object resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     * @return The {@code Result<T>} object created.
+     */
+    static <T> Result<T> createResult(@Nullable T object, @NonNull String whatYouWantedToDo,
+                                      boolean success, @Nullable Exception exception,
+                                      String... formatParameters) {
+
+        String formattedMessage = StringUtil.format(whatYouWantedToDo, formatParameters);
+
+        Result<T> result = new Result<>();
+        result.setResult(object);
+        result.setSuccessful(success);
+        result.setMessage(formattedMessage);
+
+        log(TAG, formattedMessage, success);
+
+        if (exception != null) {
+            exception.printStackTrace();
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Creates a {@link Result} object for an unsuccessful method call without logging no exception.
+     * It will format the reason and log it.
+     *
+     * @param whatYouWantedToDo          The error/success reason resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     *                         method Pass {@code null} if no exception was thrown.
+     * @param formatParameters The parameters necessary to format the reason. Pass empty in place
+     *                         of the parameters that won't be specified.
+     * @param <T>              The type of object resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     * @return The {@code Result<T>} object created.
+     */
+    static <T> Result<T> createNoExceptionResult(@NonNull String whatYouWantedToDo,
+                                                 String... formatParameters) {
+
+        return createResult(null, whatYouWantedToDo, false, null, formatParameters);
+    }
+
+    /**
+     * Creates a {@link Result} object for an unsuccessful method call without logging no exception.
+     * It will format the message and log it.
+     *
+     * @param whatYouWantedToDo          The error/success message resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     *                         method Pass {@code null} if no exception was thrown.
+     * @param formatParameters The parameters necessary to format the message. Pass empty in place
+     *                         of the parameters that won't be specified.
+     * @param <T>              The type of object resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     * @return The {@code Result<T>} object created.
+     */
+    static <T> Result<T> createSuccessfulResult(T result, @NonNull String whatYouWantedToDo,
+                                                 String... formatParameters) {
+
+        return createResult(result, whatYouWantedToDo, true, null, formatParameters);
+    }
+
+    /**
+     * Creates a {@link Result} object for an unsuccessful method call without logging no exception.
+     * It will format the reason and log it.
+     *
+     * @param whatYouWantedToDo           The error/success message resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     * @param exception        The exception resulting from the call to the {@code MemoryUtils}'
+     *                         method Pass {@code null} if no exception was thrown.
+     * @param formatParameters The parameters necessary to format the reason. Pass empty in place
+     *                         of the parameters that won't be specified.
+     * @param <T>              The type of object resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     * @return The {@code Result<T>} object created.
+     */
+    static <T> Result<T> createUnsuccessfulResult(@NonNull String whatYouWantedToDo,
+                                                  Exception exception, String... formatParameters) {
+
+        return createResult(null, whatYouWantedToDo, false, exception, formatParameters);
+    }
+
+
+    /**
+     * Creates a {@link Result} object for an unsuccessful method call when trying to save something
+     * with an invalid path.
+     * It will format the reason and log it.
+     *
+     * @param formatParameters The parameters necessary to format the reason. Pass empty in place
+     *                         of the parameters that won't be specified.
+     * @param <T>              The type of object resulting from the call to the
+     *                         {@code MemoryUtils}' method.
+     * @return The {@code Result<T>} object created.
+     */
+    static <T> Result<T> createInvalidFileResult(ValidForSavingInfoInterface validityInfo,
+                                                 String formatParameters) {
+
+        String reason;
+
+        switch (validityInfo.getReason()) {
+            case IS_A_DIRECTORY:
+                reason = MemoryUtils.DESTINATION_FILE_IS_A_FOLDER;
+                break;
+            case NOT_A_DIRECTORY:
+                reason = MemoryUtils.DESTINATION_FILE_IS_NOT_A_FOLDER;
+                break;
+            case CONTAINER_FOLDER_DOESNT_EXIST:
+                reason = MemoryUtils.CONTAINER_FOLDER_DOESNT_EXIST;
+                break;
+            default:
+                reason = MemoryUtils.FAILED;
+        }
+
+        return createResult(null, reason, false, null, formatParameters);
+    }
+
+    /**
+     * This method uses {@link Logger#log} to log messages. Logs using this method will not be
+     * shown if you disabled logging by calling {@link MemoryUtils#setLoggingEnabled(boolean)}
+     * passing {@code false.}
+     *
+     * @param message   The message to be displayed.
+     * @param isSuccess If {@code true}, {@code Log.i()} will be used. Else, {@code Log.e()} will.
+     */
+    private static void log(String tag, String message, boolean isSuccess) {
+        Logger.log(tag, message, isSuccess);
     }
 }

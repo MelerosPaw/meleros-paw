@@ -1,4 +1,4 @@
-/build
-/memoryutil.iml
-/src/androiidTest
-/src/test
+build
+memoryutil.iml
+src/androidTest
+src/test

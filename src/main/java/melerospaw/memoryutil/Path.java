@@ -27,9 +27,10 @@ public class Path {
     public static final int STORAGE_PUBLIC_EXTERNAL = 2;
     public static final int STORAGE_PREDEFINED_PUBLIC_EXTERNAL = 3;
     public static final int STORAGE_PREDEFINED_PRIVATE_EXTERNAL = 4;
-    public static final String TYPE_DOCUMENTS = "documents";
-    public static final String TYPE_DCIM = "dcim";
+	
     public static final String TYPE_ALARMS = "alarms";
+    public static final String TYPE_DCIM = "dcim";
+    public static final String TYPE_DOCUMENTS = "documents";
     public static final String TYPE_DOWNLOADS = "downloads";
     public static final String TYPE_MOVIES = "movies";
     public static final String TYPE_MUSIC = "music";
@@ -147,7 +148,6 @@ public class Path {
             stringBuilder.append("/").append(folder);
         }
 
-
         if (!TextUtils.isEmpty(mFileName)) {
             stringBuilder.append("/").append(mFileName);
         }
@@ -164,9 +164,8 @@ public class Path {
      * @return The path resulting from calling {@link #getPath()} or an empty String if it's
      * null.
      */
-    static String getPathOrEmpty(Path path) {
-        return path != null && !TextUtils.isEmpty(path.getPath()) ?
-                path.getPath() : "";
+    static String getPathOrNull(Path path) {
+        return path == null ? null : path.getPath();
     }
 
 
@@ -182,27 +181,28 @@ public class Path {
 
     @Override
     public String toString() {
-        StringBuilder toString = new StringBuilder();
-        toString.append("BASE PATH: ");
-
-        if (TextUtils.isEmpty(mBasePath)) {
-            toString.append("No base path specified.");
-        } else {
-            toString.append(mBasePath);
-        }
-
-        if (!mFolders.isEmpty()) {
-            toString.append("\nFOLDERS: ");
-            for (String folder : mFolders) {
-                toString.append("/").append(folder);
-            }
-        }
-
-        if (!TextUtils.isEmpty(mFileName)) {
-            toString.append("\nFILE: ").append("/").append(mFileName);
-        }
-
-        return toString.toString();
+//        StringBuilder toString = new StringBuilder();
+//        toString.append("BASE PATH: ");
+//
+//        if (TextUtils.isEmpty(mBasePath)) {
+//            toString.append("No base path specified.");
+//        } else {
+//            toString.append(mBasePath);
+//        }
+//
+//        if (!mFolders.isEmpty()) {
+//            toString.append("\nFOLDERS: ");
+//            for (String folder : mFolders) {
+//                toString.append("/").append(folder);
+//            }
+//        }
+//
+//        if (!TextUtils.isEmpty(mFileName)) {
+//            toString.append("\nFILE: ").append("/").append(mFileName);
+//        }
+//
+//        return toString.toString();
+        return getPath();
     }
 
 
@@ -480,23 +480,23 @@ public class Path {
          * Creates the {@code Path} object using the specified base directory, folders and file
          * name. You must at least call {@link #storageDirectory(int)},
          * {@link #storageDirectory(int, String)} or {@link #databaseDirectory(String)} to
-         * create a valid {@code Path} object.
+         * create a valid {@code Path} object. Else a {@code RuntimeException} will be thrown.
          *
-         * @return A valid Path object or {@code null} if no base directory was specified.
+         * @return A valid Path object or throws a {@code RuntimeException} if no base directory was
+         * specified.
          */
         public Path build() {
 
-            if (canCreatePath()) {
+            if (!canCreatePath()) {
+                throw new RuntimeException("Attempt to create a Path object without specifying" +
+                        "a storage directory. You must explicitly call Builder.storageDirectory()" +
+                        " or Builder.databaseDirectory(). to specify a storage directory.");
+            } else {
                 Path path = new Path(mBasePath);
                 path.setFolders(mFolders);
                 path.setFileName(TextUtils.isEmpty(mFileName) ? "" : mFileName);
                 log(String.format("Path object pointing to %1$s was created.", path.getPath()), true);
                 return path;
-            } else {
-                log("No base path has been specified. You must explicitly call" +
-                        "Builder.storageDirectory() or Builder.databaseDirectory(). to" +
-                        "specify a base directory.", false);
-                return null;
             }
         }
 
