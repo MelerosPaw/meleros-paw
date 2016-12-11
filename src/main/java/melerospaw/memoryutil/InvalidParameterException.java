@@ -5,6 +5,9 @@ import android.support.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import melerospaw.memoryutil.validation.ValidationInfoInterface;
+import melerospaw.memoryutil.validation.ValidationUtils;
+
 /**
  * Exception indicating that a parameter that you passed to a method was null/empty/useless but
  * it was essential for the method to work and should be corrected right away. Use this instead
@@ -18,7 +21,7 @@ class InvalidParameterException extends RuntimeException {
     public static final String PARAM_FILE_OBJECT = "File object";
     public static final String PARAM_OBJECT = "object";
     public static final String PARAM_FILE = "file";
-    public static final String PARAM_FILE_NAME = "file name";
+    public static final String PARAM_FILE_NAME = "file parameter";
     public static final String PARAM_INPUTSTREAM = "InputStream";
     public static final String PARAM_OUTPUTSTREAM = "OutputStream";
     public static final String PARAM_FOLDER = "folder";
@@ -28,7 +31,7 @@ class InvalidParameterException extends RuntimeException {
     public static final String PARAM_PATH_OBJECT = "Path object";
     public static final String PARAM_DESTINATION_PATH = "destination path";
     public static final String PARAM_DESTINATION_PATH_OBJECT = "destination Path object";
-    public static final String PARAM_DATABASE_NAME = "database name";
+    public static final String PARAM_DATABASE_NAME = "database parameter";
     public static final String PARAM_TEXT = "text";
     public static final String PARAM_ORIGIN_PATH = "origin path";
     public static final String PARAM_ORIGIN_PATH_OBJECT = "origin Path object";
@@ -42,11 +45,20 @@ class InvalidParameterException extends RuntimeException {
     public static final String TYPE_NOT_DIRECTORY = "is not a directory";
     public static final String TYPE_IS_DIRECTORY = "is a directory";
     public static final String TYPE_NOT_SERIALIZABLE = "is not serializable";
+    public static final String TYPE_NOT_AN_IMAGE = "is not an image";
     public static final String TYPE_CONTAINER_FOLDER_DOESNT_EXIST = "would be contained in a folder that doesn't exist yet. You must create it first.";
+
+    public static final int EXCEPTION_NORMAL = 1;
+    public static final int EXCEPTION_VALIDATION_INFO = 2;
+    public static final int EXCEPTION_MESSAGE = 3;
 
     private String whatYouWantedToDo;
     @InvalidParameter   private String theThingThatWasInvalid;
     @InvalidityType     private String invalidityType;
+    private ValidationInfoInterface validationInfo;
+    private String message;
+    private final int exceptionType;
+
 
 
     /**
@@ -54,7 +66,7 @@ class InvalidParameterException extends RuntimeException {
      * the invalid parameter.
      */
     @StringDef({TYPE_NULL, TYPE_EMPTY, TYPE_NOT_DIRECTORY, TYPE_INVALID, TYPE_IS_DIRECTORY,
-            TYPE_NOT_SERIALIZABLE, TYPE_CONTAINER_FOLDER_DOESNT_EXIST})
+            TYPE_NOT_SERIALIZABLE, TYPE_CONTAINER_FOLDER_DOESNT_EXIST, TYPE_NOT_AN_IMAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface InvalidityType {
     }
@@ -87,35 +99,47 @@ class InvalidParameterException extends RuntimeException {
         this.whatYouWantedToDo = whatYouWantedToDo;
         this.theThingThatWasInvalid = theThingThatWasInvalid;
         this.invalidityType = invalidityType;
+        this.exceptionType = EXCEPTION_NORMAL;
     }
 
-//    /**
-//     * Creates a {@code InvalidParameterException}. Use this constructor when the invalidity type
-//     * is
-//     *
-//     * @param whatYouWantedToDo      Text indicating the action that could not be performed.
-//     * @param invalidityType         The sort of invalidity.
-//     */
-//    public InvalidParameterException(String whatYouWantedToDo,
-//                                     @InvalidityType String invalidityType) {
-//        this.whatYouWantedToDo = whatYouWantedToDo;
-//        this.invalidityType = invalidityType;
-//    }
+
+    /** Creates a {@code InvalidParameterException} based on the validation information passed.
+     *
+     * @param validationInfo The validation information to create the exception.
+     */
+    public InvalidParameterException(ValidationInfoInterface validationInfo){
+        this.validationInfo = validationInfo;
+        this.exceptionType = EXCEPTION_VALIDATION_INFO;
+    }
+
+    /** Creates a {@code InvalidParameterException} based on the validation information passed.
+     *
+     * @param message The validation information to create the exception.
+     */
+    public InvalidParameterException(String message){
+        this.message = message;
+        this.exceptionType = EXCEPTION_MESSAGE;
+    }
 
 
     @Override
     public String getMessage() {
 
-        String formattedMessage = "You're trying to " + whatYouWantedToDo + ", but the " +
-                theThingThatWasInvalid + " that you're passing " + invalidityType + ".";
+        String message;
 
-//        if (TextUtils.isEmpty(theThingThatWasInvalid)){
-//            formattedMessage += invalidityType + ".";
-//        } else {
-//            formattedMessage += "you're passing " + invalidityType + " "
-//                    + theThingThatWasInvalid + ".";
-//        }
+        switch(exceptionType){
+            case EXCEPTION_NORMAL:
+                message = "You're trying to " + whatYouWantedToDo + ", but the " +
+                    theThingThatWasInvalid + " that you're passing " + invalidityType + ".";
+                break;
+            case EXCEPTION_VALIDATION_INFO:
+                message = ValidationUtils.createErrorMessage(validationInfo);
+                break;
+            case EXCEPTION_MESSAGE: message = this.message;
+                break;
+            default: message = "";
+        }
 
-        return StringUtil.format(formattedMessage);
+        return StringUtil.format(message);
     }
 }

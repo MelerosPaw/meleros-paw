@@ -1,9 +1,11 @@
 package melerospaw.memoryutil;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by Juan José Melero on 26/08/2016.
  */
-class StringUtil {
+public class StringUtil {
 
     static final String EMPTY = "";
     private static final String formatPlaceholderRegEx = "\\%[0-9]*\\$(s|d)";
@@ -32,7 +34,7 @@ class StringUtil {
      * @param text The {@code String} to be checked.
      * @return An empty {@code String} if the String is null or the String itself if it's not.
      */
-    static String getStringOrEmpty(String text) {
+    public static String getStringOrEmpty(String text) {
         return text == null ? EMPTY : text;
     }
 
@@ -43,7 +45,7 @@ class StringUtil {
      * @param tabAmount The amount of tabulations to be added to the resulting {@code String}.
      * @return A {@code String} containing {@code tabAmount} tabulations.
      */
-    static String getTabs(int tabAmount) {
+    public static String getTabs(int tabAmount) {
         String tabs = "";
 
         for (int i = 0; i < tabAmount; i++) {
@@ -51,5 +53,13 @@ class StringUtil {
         }
 
         return tabs;
+    }
+
+    /**Returns the path to the folder containing the file in {@code paht}.
+     *
+     * @param path  The path to the file whose container folder we want to get.
+     */
+    public static String getContainerFolder(@NonNull String path){
+        return path.substring(0, path.lastIndexOf("/"));
     }
 }

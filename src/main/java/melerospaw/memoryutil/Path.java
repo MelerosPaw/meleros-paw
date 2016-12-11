@@ -27,7 +27,7 @@ public class Path {
     public static final int STORAGE_PUBLIC_EXTERNAL = 2;
     public static final int STORAGE_PREDEFINED_PUBLIC_EXTERNAL = 3;
     public static final int STORAGE_PREDEFINED_PRIVATE_EXTERNAL = 4;
-	
+
     public static final String TYPE_ALARMS = "alarms";
     public static final String TYPE_DCIM = "dcim";
     public static final String TYPE_DOCUMENTS = "documents";
@@ -89,11 +89,11 @@ public class Path {
     }
 
     /**
-     * Returns the list of the folders that will be appended to the {@link #mBasePath} to create
-     * the full path. Folders will be appended to the path in the same order they were added.
+     * Returns the list of folders that will be appended to the {@link #mBasePath} to create the
+     * full path. Folders will be appended to the path in the same order they were added.
      *
-     * @return A {@code LinkedList} of String with as many elements as folders will be appended
-     * to the path.
+     * @return A {@code LinkedList<String>} with as many elements as folders will be appended to the
+     * path.
      */
     public LinkedList<String> getFolders() {
         return mFolders;
@@ -120,9 +120,9 @@ public class Path {
     }
 
     /**
-     * Returns name of the destination file that will be appended at the end of the path.
+     * Returns parameter of the destination file that will be appended at the end of the path.
      *
-     * @return The name of destination file or an empty string if no file name is specified
+     * @return The parameter of destination file or an empty string if no file parameter is specified
      * during the building process.
      */
     public String getFileName() {
@@ -135,7 +135,7 @@ public class Path {
 
     /**
      * Returns the full path composed by the base storage directory, the folders and the file
-     * name specified during the building of the object.
+     * parameter specified during the building of the object.
      *
      * @return A {@code String} with the path.
      */
@@ -234,16 +234,16 @@ public class Path {
         }
 
         /**
-         * <p>Sets the name of the folders to be appended to the path after the storage directory
+         * <p>Sets the parameter of the folders to be appended to the path after the storage directory
          * path specified with {@link #storageDirectory(int, String)},
          * {@link #storageDirectory(int)} or {@link #databaseDirectory(String)}. If you want to
-         * specify a path with several folders, call this method passing the name of the folders
+         * specify a path with several folders, call this method passing the parameter of the folders
          * in the order that will appear in the path.</p>
          * E.g.: to specify path
          * <i>/myFolderA/myFolderB/myFolderC</i>, call
          * {@code builder.folder("myFolderA").folder("myFolderB").folder("myFolderC");}
          *
-         * @param folderName The name of the folder being referenced.
+         * @param folderName The parameter of the folder being referenced.
          * @return The same {@code Builder} object making the call.
          */
         public Builder folder(String folderName) {
@@ -253,9 +253,9 @@ public class Path {
 
 
         /**
-         * Sets the name of the file at the very end of the path being created.
+         * Sets the parameter of the file at the very end of the path being created.
          *
-         * @param fileName The name of the file being referenced.
+         * @param fileName The parameter of the file being referenced.
          * @return The same {@code Builder} object making the call.
          */
         public Builder file(String fileName) {
@@ -267,17 +267,18 @@ public class Path {
         /**
          * Sets the base path to one of the application's predefined external directories.
          *
-         * @param directory The name of the external directory to be referenced.
-         * @param type      The type of the predefined folder in the external directory to be
-         *                  referenced.
-         * @return The same {@code Builder} object making the call.
+         * @param directory The parameter of the external directory to be referenced.
+         * @param type      Must be one of {@link Path.ExternalDirectoryType}. The type of the
+         *                  predefined folder in the external directory to be referenced. For
+         *                  example, {@link Path#TYPE_DCIM} will refer to folder "DCIM" in the
+         *                  external directory.
+         * @return The same {@link Builder} object making the call.
          */
         public Builder storageDirectory(@PredefinedDirectory int directory,
                                         @ExternalDirectoryType String type) {
             if (type == null) {
-                log("To use a predefined external directory, you must specify which one using" +
-                        " Environment constants.", false);
-                mBasePath = "";
+                log(context.getString(R.string.log_null_external_directory), false);
+                mBasePath = StringUtil.EMPTY;
 
             } else {
                 switch (directory) {
@@ -286,9 +287,9 @@ public class Path {
                         break;
                     case STORAGE_PREDEFINED_PRIVATE_EXTERNAL:
                         mBasePath = usePrivateExternalDirectory(type);
+                        break;
                     default:
-                        Log.e(TAG, "You must pass STORAGE_PREDEFINED_PUBLIC_EXTERNAL or " +
-                                "STORAGE_PREDEFINED_PRIVATE_EXTERNAL as a directory.");
+                        Log.e(TAG, context.getString(R.string.log_wrong_external_directory));
                 }
             }
 
@@ -299,7 +300,7 @@ public class Path {
         /**
          * Sets the base path to the application's external or internal directory.
          *
-         * @param directory The name of the base directory file to be referenced.
+         * @param directory The parameter of the base directory file to be referenced.
          * @return The same {@code Builder} object making the call.
          */
         public Builder storageDirectory(@Directory int directory) {
@@ -322,7 +323,7 @@ public class Path {
         /**
          * Sets the base path to the application's database directory.
          *
-         * @param databaseName The name of the database file to be referenced.
+         * @param databaseName The parameter of the database file to be referenced.
          * @return The same {@code Builder} object making the call.
          */
         public Builder databaseDirectory(String databaseName) {
@@ -359,7 +360,7 @@ public class Path {
                 return Environment.getExternalStoragePublicDirectory(
                         getEnvironmentDirectoryType(type)).getPath();
             } else {
-                log("External memory is not available.", false);
+                log(context.getString(R.string.log_external_storage_unavailable), false);
                 return "";
             }
         }
@@ -387,8 +388,8 @@ public class Path {
             if (MemoryUtils.isExternalMemoryAvailable()) {
                 return context.getExternalFilesDir(null).getPath();
             } else {
-                log("External memory is not available.", false);
-                return "";
+                log(context.getString(R.string.log_external_storage_unavailable), false);
+                return StringUtil.EMPTY;
             }
         }
 
@@ -409,7 +410,7 @@ public class Path {
             if (MemoryUtils.isExternalMemoryAvailable()) {
                 return context.getExternalFilesDir(getEnvironmentDirectoryType(type)).getPath();
             } else {
-                log("External memory is not available.", false);
+                log(context.getString(R.string.log_external_storage_unavailable), false);
                 return "";
             }
         }
@@ -418,7 +419,7 @@ public class Path {
         /**
          * Returns the path to the applications's database directory in an Android device.
          *
-         * @param databaseName The name of the database file in the device.
+         * @param databaseName The parameter of the database file in the device.
          * @return Default implementation returns
          * {@code context.getDatabasePath(databaseName).getPath()}.
          */
@@ -478,7 +479,7 @@ public class Path {
 
         /**
          * Creates the {@code Path} object using the specified base directory, folders and file
-         * name. You must at least call {@link #storageDirectory(int)},
+         * parameter. You must at least call {@link #storageDirectory(int)},
          * {@link #storageDirectory(int, String)} or {@link #databaseDirectory(String)} to
          * create a valid {@code Path} object. Else a {@code RuntimeException} will be thrown.
          *
@@ -488,14 +489,12 @@ public class Path {
         public Path build() {
 
             if (!canCreatePath()) {
-                throw new RuntimeException("Attempt to create a Path object without specifying" +
-                        "a storage directory. You must explicitly call Builder.storageDirectory()" +
-                        " or Builder.databaseDirectory(). to specify a storage directory.");
+                throw new RuntimeException(context.getString(R.string.exception_path_incomplete));
             } else {
                 Path path = new Path(mBasePath);
                 path.setFolders(mFolders);
-                path.setFileName(TextUtils.isEmpty(mFileName) ? "" : mFileName);
-                log(String.format("Path object pointing to %1$s was created.", path.getPath()), true);
+                path.setFileName(TextUtils.isEmpty(mFileName) ? StringUtil.EMPTY : mFileName);
+                log(String.format(context.getString(R.string.log_path_created), path.getPath()), true);
                 return path;
             }
         }

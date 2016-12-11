@@ -3,6 +3,9 @@ package melerospaw.memoryutil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import melerospaw.memoryutil.validation.ValidationInfoInterface;
+import melerospaw.memoryutil.validation.ValidationUtils;
+
 /**
  * <p>Contains the result of  calling a method from {@link MemoryUtils}.</p>
  * <p><b>Fields:</b></p>
@@ -125,7 +128,7 @@ public class Result<T> {
      * Creates a {@link Result} object for an unsuccessful method call without logging no exception.
      * It will format the reason and log it.
      *
-     * @param whatYouWantedToDo          The error/success reason resulting from the call to the
+     * @param reason          The error/success reason resulting from the call to the
      *                         {@code MemoryUtils}' method.
      *                         method Pass {@code null} if no exception was thrown.
      * @param formatParameters The parameters necessary to format the reason. Pass empty in place
@@ -134,10 +137,10 @@ public class Result<T> {
      *                         {@code MemoryUtils}' method.
      * @return The {@code Result<T>} object created.
      */
-    static <T> Result<T> createNoExceptionResult(@NonNull String whatYouWantedToDo,
+    static <T> Result<T> createNoExceptionResult(@NonNull String reason,
                                                  String... formatParameters) {
 
-        return createResult(null, whatYouWantedToDo, false, null, formatParameters);
+        return createResult(null, reason, false, null, formatParameters);
     }
 
     /**
@@ -211,6 +214,12 @@ public class Result<T> {
         }
 
         return createResult(null, reason, false, null, formatParameters);
+    }
+
+
+    static <T> Result<T> createInfoResult(ValidationInfoInterface validationInfo){
+        String problem = ValidationUtils.createErrorMessage(validationInfo);
+        return createResult(null, problem, false, null);
     }
 
     /**

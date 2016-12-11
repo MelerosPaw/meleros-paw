@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">MemoryUtil</string>
+    <string name="app_name">MemoryUtils</string>
+
+    <!--PATH-->
+
+    <!--PATH.BULDER-->
+    <string name="log_path_created">Path object pointing to %1$s was created.</string>
+    <string name="exception_path_incomplete">Attempt to create a Path object without specifying a storage directory. You must explicitly call Builder.storageDirectory() or Builder.databaseDirectory() to specify a storage directory.</string>
+    <string name="log_external_storage_unavailable">External storage is not available.</string>
+    <string name="log_wrong_external_directory">You must pass STORAGE_PREDEFINED_PUBLIC_EXTERNAL or STORAGE_PREDEFINED_PRIVATE_EXTERNAL as a directory.</string>
+    <string name="log_null_external_directory">To use a predefined external directory, you must specify which one using ExternalDirectoryType constants.</string>
+
+
 </resources>
