@@ -186,7 +186,7 @@ public class MemoryUtil {
         return result;
     }
 
-    // INCLUDED - OK
+    // INCLUDED
 
     /**
      * Copies file {@code fileName} from assets directory to {@code destinationPath}.
@@ -222,7 +222,7 @@ public class MemoryUtil {
     }
 
 
-    // INCLUDED - OK
+    // INCLUDED
 
     /**
      * Copies a file {@code fileName} from assets directory to {@code destinationPath}.
