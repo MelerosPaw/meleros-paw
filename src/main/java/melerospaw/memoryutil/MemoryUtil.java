@@ -30,19 +30,9 @@ import melerospaw.memoryutil.ExceptionManager.ExceptionType;
 import melerospaw.memoryutil.validation.ValidationInfoInterface;
 import melerospaw.memoryutil.validation.Validator;
 
-/**
- * <p>Class to make it easier to save and load from an Android device's memory.
- * Use {@link Path.Builder} to create a {@code Path} to call {@code MemoryUtils}' methods.
- * This way, folders will be created automatically when saving.
- * Then use {@link Result} class to retrieve objects from method calls, for example, the
- * {@code File} where something was saved to or the object that you are trying to retrieve from
- * memory.</p>
- * <p>
- * <p>Example code:</p>
- */
-public class MemoryUtils {
+public class MemoryUtil {
 
-    private static final String TAG = MemoryUtils.class.getSimpleName();
+    private static final String TAG = MemoryUtil.class.getSimpleName();
 
     static final String ALL_PREFERENCES_RESTORED = "Preferences in %1$s were restored.\n%2$s";
     static final String ALREADY_EXISTS = "Folder %1$s already exists.";
@@ -146,6 +136,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Receives an {@code InputStream} whose file will be copied to {@code destinationPath}. The
      * destination folder must exist or else it will fail.
@@ -196,6 +187,7 @@ public class MemoryUtils {
     }
 
     // INCLUDED - OK
+
     /**
      * Copies file {@code fileName} from assets directory to {@code destinationPath}.
      * It creates the folders in {@code destinationPath} for you.
@@ -231,6 +223,7 @@ public class MemoryUtils {
 
 
     // INCLUDED - OK
+
     /**
      * Copies a file {@code fileName} from assets directory to {@code destinationPath}.
      * {@code destinationPath} must exist.
@@ -297,6 +290,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Gets a {@code Bitmap} from the assets folder.
      *
@@ -331,6 +325,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Saves a text into a file using {@code FileWriter} and {@code BufferedWriter}.
      * It creates the folders necessary for you.
@@ -363,6 +358,7 @@ public class MemoryUtils {
     }
 
     // INCLUDED
+
     /**
      * Saves a text into a file using {@code FileWriter} and {@code BufferedWriter}.
      * The destinationPath must exist.
@@ -409,6 +405,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Loads a text file from the given {@code originPath}.
      *
@@ -432,6 +429,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Loads a text file from the given originPath.
      *
@@ -471,6 +469,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Saves an object to {@code destinationPath}.
      *
@@ -500,6 +499,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Saves an object to {@code destinationPath}.
      *
@@ -546,6 +546,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Loads an object from a file.
      *
@@ -571,6 +572,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Loads an object from a file.
      *
@@ -688,6 +690,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**********************************************************************************************
      * Saves a {@code Bitmap} to the device. This method stores a Bitmap in memory as a file, since
      * it cannot be stored as an object, for it cannot implement {@link Serializable}.
@@ -719,6 +722,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**********************************************************************************************
      * Saves a {@code Bitmap} to the device. This method stores a Bitmap in memory as a file, since
      * it cannot be stored as an object, for it cannot implemente {@link Serializable}.
@@ -754,6 +758,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Loads an image file from the device.
      *
@@ -776,6 +781,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Loads an image file from the device.
      *
@@ -811,6 +817,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Saves every preference in the {@code SharedPreferences} object received to a file as a
      * {@code Map<String, ?}. It will create the intermediate folders for you.
@@ -831,7 +838,7 @@ public class MemoryUtils {
             result = reportInvalidParameter(info);
         } else {
             if (createPath(destinationPath)) {
-                result = MemoryUtils.saveSharedPreferences(sharedPreferences, destinationPath.getPath());
+                result = MemoryUtil.saveSharedPreferences(sharedPreferences, destinationPath.getPath());
             } else {
                 result = Result.createNoExceptionResult(FAILED,
                         StringUtil.format(SAVE_SHARED_PREFERENCES, destinationPath.getPath()));
@@ -843,6 +850,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Saves every preference in the {@code SharedPreferences} object received to a file as a
      * {@code Map<String, ?}. You must make sure that you have created every intermediate folder in
@@ -863,7 +871,7 @@ public class MemoryUtils {
         if (!info.isValid()) {
             result = reportInvalidParameter(info);
         } else {
-            result = MemoryUtils.saveObject(sharedPreferences.getAll(), destinationPath);
+            result = MemoryUtil.saveObject(sharedPreferences.getAll(), destinationPath);
         }
 
         return result;
@@ -871,6 +879,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Retrieves a {@code Map<String, Object>} object with mapped shared preferences stored
      * previously in a file. Use this method if you want to retrieve the preferences and store them
@@ -895,6 +904,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Retrieves a {@code Map<String, Object>} object with mapped shared preferences stored
      * previously in a file. Use this method if you want to retrieve the preferences and store them
@@ -912,7 +922,7 @@ public class MemoryUtils {
         if (!info.isValid()) {
             result = reportInvalidParameter(info);
         } else {
-            result = MemoryUtils.loadObject(originPath, Map.class);
+            result = MemoryUtil.loadObject(originPath, Map.class);
         }
 
         return result;
@@ -920,6 +930,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Retrieves a {@code Map<String, Object>} object with mapped shared preferences stored
      * previously in a file and loads them in {@code sharedPreferences} .
@@ -945,6 +956,7 @@ public class MemoryUtils {
     }
 
     // INCLUDED
+
     /**
      * Retrieves a {@code Map<String, Object>} object with mapped shared preferences stored
      * previously in a file and loads them in the given {@code sharedPreferences}.
@@ -1035,6 +1047,7 @@ public class MemoryUtils {
     }
 
     // INCLUDED
+
     /**
      * Checks whether a file exists or not. Throws a {@code RuntimeException} if {@code pathToFile}
      * is {@code null}.
@@ -1059,6 +1072,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Checks whether a file exists or not. Throws an exception if {@code pathToFile} is null or empty.
      *
@@ -1082,6 +1096,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Checks whether a file exists or not. Throws an exception if {@code file} is null or empty.
      *
@@ -1113,7 +1128,10 @@ public class MemoryUtils {
      * will contain it does or if it does exist and it's not a folder. This method is used when you
      * want to check if something can be saved to that place.
      *
-     * @param path Path to the file to be checked.
+     * @param path      Path to the file to be checked.
+     * @param isFolder  Pass true if the path refers to a folder
+     * @param parameter The paramater type that you are passing. Must be one of
+     *                  {@link melerospaw.memoryutil.InvalidParameterException.InvalidParameter}.
      * @return {@code true} if the file exists or else {@code false}.
      */
     public static Result<ValidForSavingInfoInterface> isValidForSaving(
@@ -1168,6 +1186,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Duplicates a file. Creates the destination folders for you.
      *
@@ -1196,6 +1215,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Duplicates a file. The destination folders must exist or else copy will fail.
      *
@@ -1227,6 +1247,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Deletes the file in {@code pathToFile}.
      *
@@ -1278,6 +1299,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Deletes {@code file}. If it's a folder, deletes its content only if
      * {@code shouldClearIfDirectory} is {@code true}.
@@ -1302,31 +1324,31 @@ public class MemoryUtils {
                 result = Result.createSuccessfulResult(null, StringUtil.format(FILE_DOESNT_EXIST,
                         StringUtil.format(DELETE_FILE, file.getPath())));
 
-            // If the file exists, tries to delete it
+                // If the file exists, tries to delete it
             } else {
                 // If it's a file, it can be deleted right away
                 if (!file.isDirectory()) {
                     result = deleteIt(file);
-                // If it's a directory, tries to empty it first
+                    // If it's a directory, tries to empty it first
                 } else {
                     // If the folder is already empty, deletes it
                     if (file.list() == null || file.list().length == 0) {
                         result = deleteIt(file);
-                    // If the folder is not empty, only clears its content if shouldClearIfDirectory
-                    // is true
+                        // If the folder is not empty, only clears its content if shouldClearIfDirectory
+                        // is true
                     } else {
                         if (shouldClearIfDirectory) {
                             boolean emptied = clearFolder(file.getPath()).isSuccessful();
                             // If eventually the folder is empty, deletes it
                             if (emptied) {
                                 result = deleteIt(file);
-                            // It it's not been emptied, returns a failure Result
+                                // It it's not been emptied, returns a failure Result
                             } else {
                                 result = Result.createNoExceptionResult(FOLDER_NOT_CLEARED,
                                         StringUtil.format(DELETE_FILE, file.getPath()));
                             }
-                        // If shouldClearIfDirectory is false, the directory won't be deleted and
-                        // a failure Result will be returned
+                            // If shouldClearIfDirectory is false, the directory won't be deleted and
+                            // a failure Result will be returned
                         } else {
                             result = Result.createNoExceptionResult(DIRECTORY_HAS_FILES,
                                     StringUtil.format(DELETE_FILE, file.getPath()));
@@ -1340,6 +1362,7 @@ public class MemoryUtils {
     }
 
     // INCLUDED
+
     /**
      * Simply deletes a file and returns a failure or successful {@link Result}.
      *
@@ -1363,6 +1386,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Deletes the content of a folder. If one of the files cannot be deleted, stops deleting.
      *
@@ -1371,12 +1395,12 @@ public class MemoryUtils {
      * {@code false} if one of the files could not be deleted or after deleting every file the
      * folder is still not empty.
      */
-    public static Result clearFolder(Path pathToFolder){
+    public static Result clearFolder(Path pathToFolder) {
 
         Result result;
 
         ValidationInfoInterface info = Validator.validateClearFolder(pathToFolder);
-        if (!info.isValid()){
+        if (!info.isValid()) {
             result = reportInvalidParameter(info);
         } else {
             result = clearFolder(pathToFolder.getPath());
@@ -1387,6 +1411,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Deletes the content of a folder. If one of the files cannot be deleted, stops deleting.
      *
@@ -1408,7 +1433,7 @@ public class MemoryUtils {
             if (isFolderEmpty(folder, false)) {
                 result = Result.createSuccessfulResult(null, FOLDER_ALREADY_EMPTY, folder.getPath());
 
-            // If the folder is not empty, deletes everything in the folder
+                // If the folder is not empty, deletes everything in the folder
             } else {
 
                 boolean cleared = true;
@@ -1450,6 +1475,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Returns {@code true} if the folder is empty.
      *
@@ -1484,6 +1510,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Creates folder {@code pathToFolder}.
      *
@@ -1518,6 +1545,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * Creates the folders necessary to generate the path.
      *
@@ -1564,6 +1592,7 @@ public class MemoryUtils {
 
 
     // INCLUDED
+
     /**
      * <p>Checks files in the device to obtain the path representing the deepest existing file
      * in {@code path}.</p>

@@ -27,11 +27,11 @@ public class NonExistingFileException extends RuntimeException {
 
         String existingFilesReport = "";
 
-        String longestExistingPath = MemoryUtils.getLongestValidPath(nonExistingPath);
+        String longestExistingPath = MemoryUtil.getLongestValidPath(nonExistingPath);
         if (!longestExistingPath.isEmpty()) {
             existingFilesReport += "Closest existing file is " + longestExistingPath;
             if (new File(longestExistingPath).list().length > 0) {
-                String existingFiles = MemoryUtils.getFilesInDirectory(new File(longestExistingPath));
+                String existingFiles = MemoryUtil.getFilesInDirectory(new File(longestExistingPath));
                 if (!existingFiles.isEmpty()){
                     existingFilesReport += ", and contains the following files: " + existingFiles;
                 } else {

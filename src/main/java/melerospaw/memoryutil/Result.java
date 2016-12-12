@@ -7,7 +7,7 @@ import melerospaw.memoryutil.validation.ValidationInfoInterface;
 import melerospaw.memoryutil.validation.ValidationUtils;
 
 /**
- * <p>Contains the result of  calling a method from {@link MemoryUtils}.</p>
+ * <p>Contains the result of  calling a method from {@link MemoryUtil}.</p>
  * <p><b>Fields:</b></p>
  * <ul>
  * <li>{@code successful}: tells whether the method call has been successful or not. Can be obtained
@@ -21,11 +21,11 @@ import melerospaw.memoryutil.validation.ValidationUtils;
  *
  * @param <T> The type of the object that will result from the method call. If the call results
  *            in nothing, no {@code T} parameter needs to be specified. For example, from method
- *            {@link MemoryUtils#deleteFile(Path, boolean)} nothing is returned.
+ *            {@link MemoryUtil#deleteFile(Path, boolean)} nothing is returned.
  */
 public class Result<T> {
 
-    public static final String TAG = MemoryUtils.class.getSimpleName();
+    public static final String TAG = MemoryUtil.class.getSimpleName();
     private boolean successful;
     private T result;
     private String message;
@@ -48,7 +48,7 @@ public class Result<T> {
 
 
     /**
-     * Returns the result of the call to a {@link MemoryUtils}' method.
+     * Returns the result of the call to a {@link MemoryUtil}' method.
      *
      * @return <ul>
      * <li>When you save something, this method returns a {@code File} object pointing to
@@ -71,7 +71,7 @@ public class Result<T> {
 
 
     /**
-     * When an error occurs during the execution of the {@link MemoryUtils} method, this method
+     * When an error occurs during the execution of the {@link MemoryUtil} method, this method
      * returns a{@code String} with the error outcome. Errors and their stack traces are also
      * displayed in the logcat.
      *
@@ -201,16 +201,16 @@ public class Result<T> {
 
         switch (validityInfo.getReason()) {
             case IS_A_DIRECTORY:
-                reason = MemoryUtils.DESTINATION_FILE_IS_A_FOLDER;
+                reason = MemoryUtil.DESTINATION_FILE_IS_A_FOLDER;
                 break;
             case NOT_A_DIRECTORY:
-                reason = MemoryUtils.DESTINATION_FILE_IS_NOT_A_FOLDER;
+                reason = MemoryUtil.DESTINATION_FILE_IS_NOT_A_FOLDER;
                 break;
             case CONTAINER_FOLDER_DOESNT_EXIST:
-                reason = MemoryUtils.CONTAINER_FOLDER_DOESNT_EXIST;
+                reason = MemoryUtil.CONTAINER_FOLDER_DOESNT_EXIST;
                 break;
             default:
-                reason = MemoryUtils.FAILED;
+                reason = MemoryUtil.FAILED;
         }
 
         return createResult(null, reason, false, null, formatParameters);
@@ -224,7 +224,7 @@ public class Result<T> {
 
     /**
      * This method uses {@link Logger#log} to log messages. Logs using this method will not be
-     * shown if you disabled logging by calling {@link MemoryUtils#setLoggingEnabled(boolean)}
+     * shown if you disabled logging by calling {@link MemoryUtil#setLoggingEnabled(boolean)}
      * passing {@code false.}
      *
      * @param message   The message to be displayed.

@@ -356,7 +356,7 @@ public class Path {
          * {@code Environment.getExternalStoragePublicDirectory(type).getPath()}.
          */
         protected String usePublicExternalDirectory(@ExternalDirectoryType String type) {
-            if (MemoryUtils.isExternalMemoryAvailable()) {
+            if (MemoryUtil.isExternalMemoryAvailable()) {
                 return Environment.getExternalStoragePublicDirectory(
                         getEnvironmentDirectoryType(type)).getPath();
             } else {
@@ -385,7 +385,7 @@ public class Path {
          * {@code context.getExternalFilesDir(null).getPath()}.
          */
         protected String usePrivateExternalDirectory() {
-            if (MemoryUtils.isExternalMemoryAvailable()) {
+            if (MemoryUtil.isExternalMemoryAvailable()) {
                 return context.getExternalFilesDir(null).getPath();
             } else {
                 log(context.getString(R.string.log_external_storage_unavailable), false);
@@ -407,7 +407,7 @@ public class Path {
          * {@code context.getExternalFilesDir(type).getPath()}.
          */
         protected String usePrivateExternalDirectory(@ExternalDirectoryType String type) {
-            if (MemoryUtils.isExternalMemoryAvailable()) {
+            if (MemoryUtil.isExternalMemoryAvailable()) {
                 return context.getExternalFilesDir(getEnvironmentDirectoryType(type)).getPath();
             } else {
                 log(context.getString(R.string.log_external_storage_unavailable), false);
