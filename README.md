@@ -1,6 +1,6 @@
 # MemoryUtil
 
-MemoryUtil consists of a set of methods to perform a variety of recurrent operations to deal with files in an Android device. It can be used to easily copy, save, delete files and objects forgetting about having to deal with those _Input/OutputStreams_ issues that crowd your code with `try/catch` blocks, making it unreadable.
+MemoryUtil consists of a set of methods to perform a variety of recurrent operations to deal with files in an Android device. It can be used to easily copy, save, delete files and objects forgetting about having to deal with those _Input/OutputStreams_ issues that crowd your code with `try/catch` blocks and make it unreadable.
 
 # How To Use The Library
 
@@ -38,4 +38,4 @@ Currently this library has methods to perform the following operations:
 - Checking if external memory is available
 - Copying from an _InputStream_
 
-See [How To Create Path Objects](https://github.com/Triodesabios/meleros-paw/wiki/1.-How-To-Create-Path-Objects) and then [Functions](https://github.com/Triodesabios/meleros-paw/wiki/Functions) to learn what you can do with them.
+See [How To Create Path Objects](https://github.com/Triodesabios/meleros-paw/wiki/1.-How-To-Create-Path-Objects) and then [Functionalities](https://github.com/Triodesabios/meleros-paw/wiki/Functions) to learn what you can do with them.
