@@ -23,7 +23,7 @@ Then you can start calling _MemoryUtil_'s methods passing a _Path_ to the files 
        // Object has been saved to folder mySavedObjects in external public directory
     }
 
-_Path_ class methods uses the system's own methods to get the path to the storage directory, so it will not get deprecated through time, wich may happen if you hardcode your paths.
+_Path_ class methods uses the **system's own methods** to get the path to the storage directory, so it will not get deprecated through time, wich may happen if you hardcode your paths. In addition, the entry **parameters are validated** and exceptions will be thrown if you ever call a method using invalid parameters so you'll never let wrong calls to go unnoticed.
 
 ## What can I do with this library? 
 Currently this library has methods to perform the following operations:
