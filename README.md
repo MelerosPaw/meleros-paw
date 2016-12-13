@@ -38,4 +38,4 @@ Currently this library has methods to perform the following operations:
 - Checking if external memory is available
 - Copying from an _InputStream_
 
-See [How To Create Path Objects](https://github.com/Triodesabios/meleros-paw/wiki/1.-How-To-Create-Path-Objects) and then [Functionalities](https://github.com/Triodesabios/meleros-paw/wiki/Functions) to learn what you can do with them.
+See [How To Create Path Objects](https://github.com/Triodesabios/meleros-paw/wiki/1.-How-To-Create-Path-Objects) and then [Functionalities](https://github.com/Triodesabios/meleros-paw/wiki/Functionalities) to learn what you can do with them.
