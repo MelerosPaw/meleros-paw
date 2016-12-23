@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,73 +35,73 @@ public class MemoryUtil {
 
     private static final String TAG = MemoryUtil.class.getSimpleName();
 
-    static final String ALL_PREFERENCES_RESTORED = "Preferences in %1$s were restored.\n%2$s";
-    static final String ALREADY_EXISTS = "Folder %1$s already exists.";
-    static final String ASSET_NOT_FOUND = "File %1$s was not found in assets directory.";
-    static final String BYTE_ARRAY_SAVED = "Byte array was saved to %1$s.";
-    static final String CANNOT_COPY = "Couldn't copy file %1$s to %2$s.";
-    static final String CANNOT_CREATE = "Couldn't create folder %1$s.";
-    static final String CANNOT_CREATE_OBJECT_FILE = "Cannot save the given object to file %1$s because there was an error while writing.";
-    static final String CANNOT_CREATE_OBJECT_INPUT_STREAM = "Cannot %1$s because it was not possible to create an ObjectOutputStream.";
-    static final String CANNOT_DELETE = "File %1$s couldn't be deleted.";
-    static final String CANNOT_DELETE_FOLDER = "Cannot %1$s because inner folder %2$s cannot be deleted.";
-    static final String CANNOT_READ_OBJECT = "Cannot %1$s because the object could not be read.";
-    static final String CANNOT_SAVE_TEXT = "Cannot save text to file %1$s.";
-    static final String CLASS_NOT_FOUND = "Cannot %1$s because such class was not found.";
-    static final String CLEAR_FOLDER = "clear folder %1$s";
-    static final String COPY_FROM_INPUT_STREAM = "copy %1$s from an InputStream";
-    static final String COULD_NOT_CREATE_PATH = "Could not create path %1$s.";
-    static final String CREATED = "Folder %1$s was created.";
-    static final String DELETED_BUT_STILL_NOT_EMPTY = "All files in folder %1$s were deleted but still it's not empty.";
-    static final String DELETE_FILE = "delete file %1$s";
-    static final String DESTINATION_FILE_NOT_FOUND = "Cannot %1$s because destination file %2$s was not found.";
-    static final String DESTINATION_FOLDER_NOT_FOUND = "Cannot %1$s because the destination folder was not found.";
-    static final String DIRECTORY_HAS_FILES = "Cannot %1$s because it is a directory containing other files. If you want to delete it, pass shouldClearIfDirectory = true as second parameter to method deleteFile().";
-    static final String DUPLICATE_FILE = "duplicate file %1$s";
-    static final String ERROR_WHILE_READING = "An error occurred while reading text fom file %1$s.";
-    static final String ERROR_WRITING_BYTE_ARRAY = "Cannot %1$s because there was an error while writing the byte[].";
-    static final String FAILED = "Cannot %1$s. FAILED.";
-    static final String FILE_COPIED = "File %1$s was copied to %2$s.";
-    static final String FILE_DELETED = "File %1$s was deleted.";
-    static final String FILE_DOESNT_EXIST = "Cannot %1$s because the file doesn't exist.";
-    static final String FILE_EXISTS = "File %1$s exists.";
-    static final String FILE_NOT_FOUND = "Cannot %1$s because the file was not found.";
-    static final String FILE_TREE_GENERATED = "File tree generated.";
-    static final String FOLDER_ALREADY_EMPTY = "Folder %1$s was already empty.";
-    static final String FOLDER_EMPTY = "Folder %1$s is empty.";
-    static final String FOLDER_IS_NOT_EMPTY = "Folder %1$s is not empty.";
-    static final String FOLDER_NOT_CLEARED = "Cannot %1$s because it's a folder but it could not be cleared.";
-    static final String DESTINATION_FILE_IS_A_FOLDER = "Cannot %1$s because the destination file is a folder.";
-    static final String DESTINATION_FILE_IS_NOT_A_FOLDER = "Cannot %1$s because the destination file is not a folder.";
-    static final String CONTAINER_FOLDER_DOESNT_EXIST = "Cannot %1$s because the folder that will contain the file doesn't exist. You must create it first.";
-    static final String IMAGE_LOADED_FROM_ASSETS = "Image %1$s was retrieved from assets.";
-    static final String IMAGE_NOT_FOUND_IN_ASSETS = "Image %1$s was not found in assets.";
-    static final String IS_A_FOLDER = "File %1$s is a folder.";
-    static final String LOAD_OBJECT = "load a/an %1$s object from file %2$s";
-    static final String LOAD_TEXT_FROM_FILE = "load text from file %1$s";
-    static final String NOT_A_FOLDER = "File %1$s is not a folder.";
-    static final String NO_PREFERENCES_RESTORED = "No preferences at all were restored from %1$s.";
-    static final String OBJECT_LOADED = "Object retrieved from %1$s.";
-    static final String OBJECT_SAVED = "Object saved to %1$s.";
-    static final String PATH_CONTAINED_NO_FOLDERS = "Path object %1$s contains no folders, so no intermediate folders were created to create it.";
-    static final String PATH_CREATED = "Folders %1$s were created or already existed. Path created.";
-    static final String PREFERENCES_PARTIALLY_RESTORED = "Stored preferences in %1$s could only be partially restored.\n%2$s";
-    static final String SAVE_BYTE_ARRAY = "save a byte array to file %1$s";
-    static final String SAVE_OBJECT = "save an object to file %1$s";
-    static final String SAVE_SHARED_PREFERENCES = "save SharedPreferences to file %1$s";
-    static final String SAVE_TEXT_TO_FILE = "save text to file %1$s";
-    static final String SHARED_PREFERENCES_NOT_RESTORED = "Cannot load SharedPreferences preferences from %1$s.";
-    static final String STATEMENT_FILE_DOESNT_EXISTS = "File %1$s doesn't exists.";
-    static final String TEXT_FILE_SAVED = "Text was saved to %1$s.";
-    static final String TEXT_LOADED = "Text was loaded from file %1$s.";
-    static final String SAVE_BITMAP = "save a bitmap to %1$s";
-    static final String UNEXPECTED_IO_ERROR = "Cannot %1$s because there was an unexpected IO error.";
-    static final String BITMAP_SAVED = "Bitmap was saved to %1$s.";
-    static final String LOAD_BITMAP = "load image %1$s";
-    static final String BITMAP_LOADED = "Bitmap was loaded from %1$s.";
-    static final String CANNOT_CONVERT_TO_BITMAP = "Cannot %1$s because the file cannot be converted to a Bitmap object.";
-    static final String IS_VALID_FOR_SAVING = "Path %1$s is valid for saving to it.";
-    static final String FOLDER_CLEARED = "Folder %1$s was cleared.";
+    private static final String ALL_PREFERENCES_RESTORED = "Preferences in %1$s were restored.\n%2$s";
+    private static final String ALREADY_EXISTS = "Folder %1$s already exists.";
+    private static final String ASSET_NOT_FOUND = "File %1$s was not found in assets directory.";
+    private static final String BYTE_ARRAY_SAVED = "Byte array was saved to %1$s.";
+    private static final String CANNOT_COPY = "Couldn't copy file %1$s to %2$s.";
+    private static final String CANNOT_CREATE = "Couldn't create folder %1$s.";
+    private static final String CANNOT_CREATE_OBJECT_FILE = "Cannot save the given object to file %1$s because there was an error while writing.";
+    private static final String CANNOT_CREATE_OBJECT_INPUT_STREAM = "Cannot %1$s because it was not possible to create an ObjectOutputStream.";
+    private static final String CANNOT_DELETE = "File %1$s couldn't be deleted.";
+    private static final String CANNOT_DELETE_FOLDER = "Cannot %1$s because inner folder %2$s cannot be deleted.";
+    private static final String CANNOT_READ_OBJECT = "Cannot %1$s because the object could not be read.";
+    private static final String CANNOT_SAVE_TEXT = "Cannot save text to file %1$s.";
+    private static final String CLASS_NOT_FOUND = "Cannot %1$s because such class was not found.";
+    private static final String CLEAR_FOLDER = "clear folder %1$s";
+    private static final String COPY_FROM_INPUT_STREAM = "copy %1$s from an InputStream";
+    private static final String COULD_NOT_CREATE_PATH = "Could not create path %1$s.";
+    private static final String CREATED = "Folder %1$s was created.";
+    private static final String DELETED_BUT_STILL_NOT_EMPTY = "All files in folder %1$s were deleted but still it's not empty.";
+    private static final String DELETE_FILE = "delete file %1$s";
+    private static final String DESTINATION_FILE_NOT_FOUND = "Cannot %1$s because destination file %2$s was not found.";
+    private static final String DESTINATION_FOLDER_NOT_FOUND = "Cannot %1$s because the destination folder was not found.";
+    private static final String DIRECTORY_HAS_FILES = "Cannot %1$s because it is a directory containing other files. If you want to delete it, pass shouldClearIfDirectory = true as second parameter to method deleteFile().";
+    private static final String DUPLICATE_FILE = "duplicate file %1$s";
+    private static final String ERROR_WHILE_READING = "An error occurred while reading text fom file %1$s.";
+    private static final String ERROR_WRITING_BYTE_ARRAY = "Cannot %1$s because there was an error while writing the byte[].";
+    private static final String FAILED = "Cannot %1$s. FAILED.";
+    private static final String FILE_COPIED = "File %1$s was copied to %2$s.";
+    private static final String FILE_DELETED = "File %1$s was deleted.";
+    private static final String FILE_DOESNT_EXIST = "Cannot %1$s because the file doesn't exist.";
+    private static final String FILE_EXISTS = "File %1$s exists.";
+    private static final String FILE_NOT_FOUND = "Cannot %1$s because the file was not found.";
+    private static final String FILE_TREE_GENERATED = "File tree generated.";
+    private static final String FOLDER_ALREADY_EMPTY = "Folder %1$s was already empty.";
+    private static final String FOLDER_EMPTY = "Folder %1$s is empty.";
+    private static final String FOLDER_IS_NOT_EMPTY = "Folder %1$s is not empty.";
+    private static final String FOLDER_NOT_CLEARED = "Cannot %1$s because it's a folder but it could not be cleared.";
+    private static final String IMAGE_LOADED_FROM_ASSETS = "Image %1$s was retrieved from assets.";
+    private static final String IMAGE_NOT_FOUND_IN_ASSETS = "Image %1$s was not found in assets.";
+    private static final String IS_A_FOLDER = "File %1$s is a folder.";
+    private static final String LOAD_OBJECT = "load a/an %1$s object from file %2$s";
+    private static final String LOAD_TEXT_FROM_FILE = "load text from file %1$s";
+    private static final String NOT_A_FOLDER = "File %1$s is not a folder.";
+    private static final String NO_PREFERENCES_RESTORED = "No preferences at all were restored from %1$s.";
+    private static final String OBJECT_LOADED = "Object retrieved from %1$s.";
+    private static final String OBJECT_SAVED = "Object saved to %1$s.";
+    private static final String PATH_CONTAINED_NO_FOLDERS = "Path object %1$s contains no folders, so no intermediate folders were created to create it.";
+    private static final String PATH_CREATED = "Folders %1$s were created or already existed. Path created.";
+    private static final String PREFERENCES_PARTIALLY_RESTORED = "Stored preferences in %1$s could only be partially restored.\n%2$s";
+    private static final String SAVE_BYTE_ARRAY = "save a byte array to file %1$s";
+    private static final String SAVE_OBJECT = "save an object to file %1$s";
+    private static final String SAVE_SHARED_PREFERENCES = "save SharedPreferences to file %1$s";
+    private static final String SAVE_TEXT_TO_FILE = "save text to file %1$s";
+    private static final String SHARED_PREFERENCES_NOT_RESTORED = "Cannot load SharedPreferences preferences from %1$s.";
+    private static final String STATEMENT_FILE_DOESNT_EXISTS = "File %1$s doesn't exists.";
+    private static final String TEXT_FILE_SAVED = "Text was saved to %1$s.";
+    private static final String TEXT_LOADED = "Text was loaded from file %1$s.";
+    private static final String SAVE_BITMAP = "save a bitmap to %1$s";
+    private static final String UNEXPECTED_IO_ERROR = "Cannot %1$s because there was an unexpected IO error.";
+    private static final String BITMAP_SAVED = "Bitmap was saved to %1$s.";
+    private static final String LOAD_BITMAP = "load image %1$s";
+    private static final String BITMAP_LOADED = "Bitmap was loaded from %1$s.";
+    private static final String CANNOT_CONVERT_TO_BITMAP = "Cannot %1$s because the file cannot be converted to a Bitmap object.";
+    private static final String IS_VALID_FOR_SAVING = "Path %1$s is valid for saving to it.";
+    private static final String FOLDER_CLEARED = "Folder %1$s was cleared.";
+    private static final String NULL_FILE_FROM_URI = "Cannot %1$s because the bitmap obtained from %2$s happens to be null. The uri may not be referencing an image.";
+    private static final String LOAD_BITMAP_FROM_URI = "load bitmap from uri %1$s";
+    private static final String BITMAP_LOADED_FROM_URI = "Bitmap was loaded from uri %1$s.";
 
 
     /**
@@ -389,6 +390,7 @@ public class MemoryUtil {
                     bufferedWriter.write(text.toCharArray(), 0, text.length());
                     bufferedWriter.flush();
                     bufferedWriter.close();
+                    fileWriter.close();
                     result = Result.createSuccessfulResult(destinationFile, TEXT_FILE_SAVED,
                             destinationPath);
                 } catch (IOException e) {
@@ -455,6 +457,8 @@ public class MemoryUtil {
                     while ((line = reader.readLine()) != null) {
                         text.append(line).append("\n");
                     }
+                    fileReader.close();
+                    reader.close();
                     result = Result.createSuccessfulResult(text.toString(), TEXT_LOADED, originPath);
                 } catch (IOException e) {
                     result = Result.createUnsuccessfulResult(ERROR_WHILE_READING, e, originPath);
@@ -527,6 +531,7 @@ public class MemoryUtil {
                         objectStreamToFile.writeObject(object);
                         objectStreamToFile.flush();
                         objectStreamToFile.close();
+                        streamToFile.close();
                         result = Result.createSuccessfulResult(new File(destinationPath), OBJECT_SAVED, destinationPath);
                     } catch (IOException e) {
                         return Result.createUnsuccessfulResult(CANNOT_CREATE_OBJECT_FILE, e, destinationPath);
@@ -597,6 +602,7 @@ public class MemoryUtil {
                     ObjectInputStream streamToLoadObject = new ObjectInputStream(streamToFile);
                     try {
                         T object = (T) streamToLoadObject.readObject();
+                        streamToFile.close();
                         result = Result.createSuccessfulResult(object, OBJECT_LOADED, originPath);
                     } catch (ClassNotFoundException e) {
                         result = Result.createUnsuccessfulResult(CLASS_NOT_FOUND, e,
@@ -809,6 +815,43 @@ public class MemoryUtil {
             } catch (FileNotFoundException e) {
                 result = Result.createUnsuccessfulResult(FILE_NOT_FOUND, e,
                         StringUtil.format(LOAD_BITMAP, originPath));
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Loads a {@code Bitmap} from a {@code Uri}.
+     *
+     * @param context   A {@code Context} to call contentResolver.
+     * @param originUri The image identifier.
+     * @return A {@code Result} containing the {@code Bitmap} referenced by the {@code originUri} or
+     * {@code null} if the {@code originUri} references a non-existing file.
+     */
+    public static Result<Bitmap> loadBitmap(Context context, Uri originUri) {
+
+        Result<Bitmap> result;
+
+        ValidationInfoInterface info = Validator.validateLoadBitmap(context, originUri);
+        if (!info.isValid()){
+            result = reportInvalidParameter(info);
+        } else {
+            try {
+                InputStream is = context.getContentResolver().openInputStream(originUri);
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                if (bitmap == null) {
+                    result = Result.createNoExceptionResult(
+                            StringUtil.format(NULL_FILE_FROM_URI,
+                                    StringUtil.format(LOAD_BITMAP_FROM_URI, originUri.getPath())));
+                } else {
+                    result = Result.createSuccessfulResult(bitmap, BITMAP_LOADED_FROM_URI,
+                            originUri.getPath());
+                }
+            } catch (FileNotFoundException e) {
+                result = Result.createUnsuccessfulResult(FILE_NOT_FOUND, e,
+                        StringUtil.format(LOAD_BITMAP_FROM_URI, originUri.getPath()));
             }
         }
 

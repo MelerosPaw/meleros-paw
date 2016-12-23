@@ -3,8 +3,10 @@ package melerospaw.memoryutil.validation;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -44,6 +46,9 @@ public class Validator implements ValidatorInterface {
                         break;
                     case PATH_TO_FOLDER:
                         info = validatePathToFolder((String) value, info);
+                        break;
+                    case ORIGIN_URI:
+                        info = validateOriginUri((Uri) value, info);
                         break;
                     case ORIGIN_PATH:
                         info = validateOriginPath((String) value, info);
@@ -94,8 +99,8 @@ public class Validator implements ValidatorInterface {
 
 
     /*PARAMETER VALIDATION*/
-    public ValidationInfoInterface validateDestinationPath(String destinationPath,
-                                                           ValidationInfoInterface info) {
+    private ValidationInfoInterface validateDestinationPath(String destinationPath,
+                                                            ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
@@ -123,8 +128,8 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validateOriginPath(String originPath,
-                                                      ValidationInfoInterface info) {
+    private ValidationInfoInterface validateOriginPath(String originPath,
+                                                       ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
@@ -144,8 +149,8 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validateOriginPathObject(Path originPath,
-                                                            ValidationInfoInterface info) {
+    private ValidationInfoInterface validateOriginPathObject(Path originPath,
+                                                             ValidationInfoInterface info) {
 
         Invalidity invalidity;
 
@@ -161,8 +166,8 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validateNull(Object object, ValidationInfoInterface info,
-                                                Parameter parameter) {
+    private ValidationInfoInterface validateNull(Object object, ValidationInfoInterface info,
+                                                 Parameter parameter) {
         Invalidity invalidity = validateNull(object);
         boolean isValid = invalidity == Invalidity.NONE;
         setValidationValues(info, parameter, invalidity, isValid);
@@ -170,8 +175,8 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validatePathToFile(Path pathToFile,
-                                                      ValidationInfoInterface info) {
+    private ValidationInfoInterface validatePathToFile(Path pathToFile,
+                                                       ValidationInfoInterface info) {
 
         Invalidity invalidity = validateNull(pathToFile);
         boolean isValid = invalidity == Invalidity.NONE;
@@ -180,8 +185,8 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validatePathToFolder(String pathToFolder,
-                                                        ValidationInfoInterface info) {
+    private ValidationInfoInterface validatePathToFolder(String pathToFolder,
+                                                         ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
@@ -216,7 +221,7 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validateFolder(File folder, ValidationInfoInterface info) {
+    private ValidationInfoInterface validateFolder(File folder, ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
@@ -238,7 +243,7 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validateObject(Object object, ValidationInfoInterface info) {
+    private ValidationInfoInterface validateObject(Object object, ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
@@ -258,8 +263,8 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    public ValidationInfoInterface validateFileName(HashMap<Parameter, Object> parameters,
-                                                  ValidationInfoInterface info){
+    private ValidationInfoInterface validateFileName(HashMap<Parameter, Object> parameters,
+                                                     ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
@@ -270,11 +275,11 @@ public class Validator implements ValidatorInterface {
         Invalidity invalidityAux = validateNullOrEmpty(fileName);
         if (invalidityAux != Invalidity.NONE) {
             invalidity = invalidityAux;
-        } else if (context != null){
+        } else if (context != null) {
             try {
                 context.getAssets().open(fileName);
                 invalidity = Invalidity.NONE;
-            } catch(IOException e){
+            } catch (IOException e) {
                 invalidity = Invalidity.ASSET_DOESNT_EXIST;
             }
         } else {
@@ -288,43 +293,15 @@ public class Validator implements ValidatorInterface {
     }
 
 
-    /* GENERIC VALIDATION */
-    public ValidationInfoInterface validateString(String pathToFile, ValidationInfoInterface info,
-                                                  Parameter parameter) {
-        Invalidity invalidity = validateNullOrEmpty(pathToFile);
-        boolean isValid = invalidity == Invalidity.NONE;
-        setValidationValues(info, parameter, invalidity, isValid);
-        return info;
-    }
-
-    public Invalidity validateNull(Object object) {
-        return object == null ? Invalidity.IS_NULL : Invalidity.NONE;
-    }
-
-    public Invalidity validateNullOrEmpty(String theString) {
-
-        Invalidity invalidity;
-
-        if (theString == null) {
-            invalidity = Invalidity.IS_NULL;
-        } else if (theString.isEmpty()) {
-            invalidity = Invalidity.IS_EMPTY;
-        } else {
-            invalidity = Invalidity.NONE;
-        }
-
-        return invalidity;
-    }
-
-    public ValidationInfoInterface validateOriginPathObjectPath(String stringPath,
-                                                                ValidationInfoInterface info) {
+    private ValidationInfoInterface validateOriginPathObjectPath(String stringPath,
+                                                                 ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
 
         String path = stringPath;
         Invalidity invalidityAux = validateNullOrEmpty(path);
-        if (invalidityAux != Invalidity.NONE){
+        if (invalidityAux != Invalidity.NONE) {
             invalidity = invalidityAux;
         } else {
             if (!new File(stringPath).exists()) {
@@ -339,7 +316,72 @@ public class Validator implements ValidatorInterface {
         return info;
     }
 
-    public Invalidity isValidForSaving(String path, ValidationInfoInterface info) {
+
+    private ValidationInfoInterface validateOriginUri(Uri originUri, ValidationInfoInterface info) {
+
+        Invalidity invalidity;
+        Parameter invalidParameter = Parameter.ORIGIN_URI;
+        boolean isValid;
+
+        Invalidity invalidityAux = validateNull(originUri);
+        if (invalidityAux != Invalidity.NONE) {
+            invalidity = invalidityAux;
+        } else {
+            String uriPath = originUri.getPath();
+            Invalidity invalidityAux2 = validateNullOrEmpty(uriPath);
+            if (invalidityAux2 != Invalidity.NONE) {
+                invalidity = invalidityAux2;
+            } else {
+                Context context = (Context) info.getParameterList().get(Parameter.CONTEXT);
+                try {
+                    InputStream is = context.getContentResolver().openInputStream(originUri);
+                    if (is != null) {
+                        invalidity = Invalidity.NONE;
+                    } else {
+                        invalidity = Invalidity.UNPARSEABLE_URI;
+                    }
+                } catch (FileNotFoundException e){
+                    invalidity = Invalidity.FILE_DOESNT_EXIST;
+                    invalidParameter = Parameter.PATH_IN_URI;
+                }
+            }
+        }
+
+        isValid = invalidity == Invalidity.NONE;
+        setValidationValues(info, invalidParameter, invalidity, isValid);
+        return info;
+    }
+
+
+    /* GENERIC VALIDATION */
+    private ValidationInfoInterface validateString(String pathToFile, ValidationInfoInterface info,
+                                                   Parameter parameter) {
+        Invalidity invalidity = validateNullOrEmpty(pathToFile);
+        boolean isValid = invalidity == Invalidity.NONE;
+        setValidationValues(info, parameter, invalidity, isValid);
+        return info;
+    }
+
+    private Invalidity validateNull(Object object) {
+        return object == null ? Invalidity.IS_NULL : Invalidity.NONE;
+    }
+
+    private Invalidity validateNullOrEmpty(String theString) {
+
+        Invalidity invalidity;
+
+        if (theString == null) {
+            invalidity = Invalidity.IS_NULL;
+        } else if (theString.isEmpty()) {
+            invalidity = Invalidity.IS_EMPTY;
+        } else {
+            invalidity = Invalidity.NONE;
+        }
+
+        return invalidity;
+    }
+
+    private Invalidity isValidForSaving(String path, ValidationInfoInterface info) {
         ValidationInfoInterface infoAux =
                 ValidationUtils.isPathValidForSaving(new File(path), info.getMethod() == Method.CREATE_FOLDER, info);
         return !infoAux.isValid() ? infoAux.getInvalidityType() : Invalidity.NONE;
@@ -351,7 +393,6 @@ public class Validator implements ValidatorInterface {
         info.setInvalidityType(invalidity);
         info.setIsValid(isValid);
     }
-
 
 
     /*METHOD VALIDATION*/
@@ -540,6 +581,15 @@ public class Validator implements ValidatorInterface {
         Method method = Method.LOAD_BITMAP;
         HashMap<Parameter, Object> parameters = new HashMap<>(1);
         parameters.put(Parameter.ORIGIN_PATH, originPath);
+        Validator validator = new Validator(parameters, method);
+        return validator.assertAreParametersValid();
+    }
+
+    public static ValidationInfoInterface validateLoadBitmap(Context context, Uri originUri) {
+        Method method = Method.LOAD_BITMAP_URI;
+        HashMap<Parameter, Object> parameters = new HashMap<>(2);
+        parameters.put(Parameter.CONTEXT, context);
+        parameters.put(Parameter.ORIGIN_URI, originUri);
         Validator validator = new Validator(parameters, method);
         return validator.assertAreParametersValid();
     }

@@ -7,7 +7,7 @@ import melerospaw.memoryutil.validation.ValidationInfoInterface;
 import melerospaw.memoryutil.validation.ValidationUtils;
 
 /**
- * <p>Contains the result of  calling a method from {@link MemoryUtil}.</p>
+ * <p>Contains the result of calling a method from {@link MemoryUtil}.</p>
  * <p><b>Fields:</b></p>
  * <ul>
  * <li>{@code successful}: tells whether the method call has been successful or not. Can be obtained
@@ -26,6 +26,12 @@ import melerospaw.memoryutil.validation.ValidationUtils;
 public class Result<T> {
 
     public static final String TAG = MemoryUtil.class.getSimpleName();
+
+    private static final String DESTINATION_FILE_IS_A_FOLDER = "Cannot %1$s because the destination file is a folder.";
+    private static final String DESTINATION_FILE_IS_NOT_A_FOLDER = "Cannot %1$s because the destination file is not a folder.";
+    private static final String CONTAINER_FOLDER_DOESNT_EXIST = "Cannot %1$s because the folder that will contain the file doesn't exist. You must create it first.";
+    private static final String FAILED = "Failed";
+
     private boolean successful;
     private T result;
     private String message;
@@ -89,18 +95,18 @@ public class Result<T> {
      * Creates a {@link Result} object with the object resulting from a call to a
      * {@code MemoryUtils}' method specified. It will format the message and log it.
      *
-     * @param object           The object resulting from the call to the {@code MemoryUtils}'
-     *                         method.
-     * @param whatYouWantedToDo          The error/success message resulting from the call to the
-     *                         {@code MemoryUtils}' method.
-     * @param success          Pass {@code true} if the call to the {@code MemoryUtils}' method was
-     *                         successful or else {@code false}.
-     * @param exception        The exception resulting from the call to the {@code MemoryUtils}'
-     *                         method Pass {@code null} if no exception was thrown.
-     * @param formatParameters The parameters necessary to format the message. Pass empty in place
-     *                         of the parameters that won't be specified.
-     * @param <T>              The type of object resulting from the call to the
-     *                         {@code MemoryUtils}' method.
+     * @param object            The object resulting from the call to the {@code MemoryUtils}'
+     *                          method.
+     * @param whatYouWantedToDo The error/success message resulting from the call to the
+     *                          {@code MemoryUtils}' method.
+     * @param success           Pass {@code true} if the call to the {@code MemoryUtils}' method was
+     *                          successful or else {@code false}.
+     * @param exception         The exception resulting from the call to the {@code MemoryUtils}'
+     *                          method Pass {@code null} if no exception was thrown.
+     * @param formatParameters  The parameters necessary to format the message. Pass empty in place
+     *                          of the parameters that won't be specified.
+     * @param <T>               The type of object resulting from the call to the
+     *                          {@code MemoryUtils}' method.
      * @return The {@code Result<T>} object created.
      */
     static <T> Result<T> createResult(@Nullable T object, @NonNull String whatYouWantedToDo,
@@ -125,10 +131,10 @@ public class Result<T> {
 
 
     /**
-     * Creates a {@link Result} object for an unsuccessful method call without logging no exception.
+     * Creates a {@link Result} object for an unsuccessful method call and throws no exception.
      * It will format the reason and log it.
      *
-     * @param reason          The error/success reason resulting from the call to the
+     * @param reason           The error/success reason resulting from the call to the
      *                         {@code MemoryUtils}' method.
      *                         method Pass {@code null} if no exception was thrown.
      * @param formatParameters The parameters necessary to format the reason. Pass empty in place
@@ -144,36 +150,36 @@ public class Result<T> {
     }
 
     /**
-     * Creates a {@link Result} object for an unsuccessful method call without logging no exception.
-     * It will format the message and log it.
+     * Creates a {@link Result} object for a successful method call. It will format the message and
+     * log it.
      *
-     * @param whatYouWantedToDo          The error/success message resulting from the call to the
-     *                         {@code MemoryUtils}' method.
-     *                         method Pass {@code null} if no exception was thrown.
-     * @param formatParameters The parameters necessary to format the message. Pass empty in place
-     *                         of the parameters that won't be specified.
-     * @param <T>              The type of object resulting from the call to the
-     *                         {@code MemoryUtils}' method.
+     * @param whatYouWantedToDo The error/success message resulting from the call to the
+     *                          {@code MemoryUtils}' method.
+     *                          method Pass {@code null} if no exception was thrown.
+     * @param formatParameters  The parameters necessary to format the message. Pass empty in place
+     *                          of the parameters that won't be specified.
+     * @param <T>               The type of object resulting from the call to the
+     *                          {@code MemoryUtils}' method.
      * @return The {@code Result<T>} object created.
      */
     static <T> Result<T> createSuccessfulResult(T result, @NonNull String whatYouWantedToDo,
-                                                 String... formatParameters) {
+                                                String... formatParameters) {
 
         return createResult(result, whatYouWantedToDo, true, null, formatParameters);
     }
 
     /**
-     * Creates a {@link Result} object for an unsuccessful method call without logging no exception.
-     * It will format the reason and log it.
+     * Creates a {@link Result} object for an unsuccessful method call and throws the
+     * {@code exception}logging no exception. It will format the reason and log it.
      *
-     * @param whatYouWantedToDo           The error/success message resulting from the call to the
-     *                         {@code MemoryUtils}' method.
-     * @param exception        The exception resulting from the call to the {@code MemoryUtils}'
-     *                         method Pass {@code null} if no exception was thrown.
-     * @param formatParameters The parameters necessary to format the reason. Pass empty in place
-     *                         of the parameters that won't be specified.
-     * @param <T>              The type of object resulting from the call to the
-     *                         {@code MemoryUtils}' method.
+     * @param whatYouWantedToDo The error/success message resulting from the call to the
+     *                          {@code MemoryUtils}' method.
+     * @param exception         The exception resulting from the call to the {@code MemoryUtils}'
+     *                          method Pass {@code null} if no exception was thrown.
+     * @param formatParameters  The parameters necessary to format the reason. Pass empty in place
+     *                          of the parameters that won't be specified.
+     * @param <T>               The type of object resulting from the call to the
+     *                          {@code MemoryUtils}' method.
      * @return The {@code Result<T>} object created.
      */
     static <T> Result<T> createUnsuccessfulResult(@NonNull String whatYouWantedToDo,
@@ -201,23 +207,23 @@ public class Result<T> {
 
         switch (validityInfo.getReason()) {
             case IS_A_DIRECTORY:
-                reason = MemoryUtil.DESTINATION_FILE_IS_A_FOLDER;
+                reason = DESTINATION_FILE_IS_A_FOLDER;
                 break;
             case NOT_A_DIRECTORY:
-                reason = MemoryUtil.DESTINATION_FILE_IS_NOT_A_FOLDER;
+                reason = DESTINATION_FILE_IS_NOT_A_FOLDER;
                 break;
             case CONTAINER_FOLDER_DOESNT_EXIST:
-                reason = MemoryUtil.CONTAINER_FOLDER_DOESNT_EXIST;
+                reason = CONTAINER_FOLDER_DOESNT_EXIST;
                 break;
             default:
-                reason = MemoryUtil.FAILED;
+                reason = FAILED;
         }
 
         return createResult(null, reason, false, null, formatParameters);
     }
 
 
-    static <T> Result<T> createInfoResult(ValidationInfoInterface validationInfo){
+    static <T> Result<T> createInfoResult(ValidationInfoInterface validationInfo) {
         String problem = ValidationUtils.createErrorMessage(validationInfo);
         return createResult(null, problem, false, null);
     }

@@ -1,32 +1,34 @@
 package melerospaw.memoryutil.validation;
 
-public class ValidationEnums {
+class ValidationEnums {
 
-    public enum Parameter {
-        UNEXPECTED_PARAMETER("unexpected parameter", "some of the parameters"),
+    enum Parameter {
         BITMAP("Bitmap", "the bitmap"),
+        BYTE_ARRAY("byte[]", "the byte[]"),
+        CLASS("Class", "the class"),
         CONTEXT("Context", "the context"),
+        DATABASE_NAME("data base name", "the data base name"),
         DESTINATION_PATH("destination path", "the destination path"),
         DESTINATION_PATH_OBJECT("destination Path object", "the destination Path object"),
+        FILE("File", "the file"),
         FILE_NAME("file name", "the file name"),
+        FOLDER("folder", "the folder"),
+        INPUTSTREAM("InputStream", "the InputStream"),
+        OBJECT("Object", "the object"),
         ORIGIN_PATH("origin path", "the origin path"),
         ORIGIN_PATH_OBJECT("origin Path object", "the origin Path object"),
+        ORIGIN_URI("origin uri", "the origin uri"),
+        PATH("path to file", "the path to file"),
+        PATH_IN_URI("path in Uri", "the file referenced by the Uri"),
+        PATH_OBJECT("Path object", "the Path object"),
         PATH_OBJECT_STRING("String path in origin Path object", "the String path contained in the origin Path object"),
-        SHARED_PREFERENCES("SharedPreferences", "the SharedPreferences object"),
         PATH_OBJECT_TO_FILE("Path object pointing to file", "the Path object pointing to file"),
         PATH_OBJECT_TO_FOLDER("Path object pointing to folder", "the Path object pointing to folder"),
         PATH_TO_FILE("path to file", "the path to file"),
         PATH_TO_FOLDER("path to folder", "the path to folder"),
-        PATH("path to file", "the path to file"),
-        PATH_OBJECT("Path object", "the Path object"),
-        FILE("File", "the file"),
-        FOLDER("folder", "the folder"),
-        INPUTSTREAM("InputStream", "the InputStream"),
-        DATABASE_NAME("data base name", "the data base name"),
+        SHARED_PREFERENCES("SharedPreferences", "the SharedPreferences object"),
         TEXT("text", "the text"),
-        OBJECT("Object", "the object"),
-        CLASS("Class", "the class"),
-        BYTE_ARRAY("byte[]", "the byte[]");
+        UNEXPECTED_PARAMETER("unexpected parameter", "some of the parameters");
 
         public String parameter;
         public String description;
@@ -42,19 +44,19 @@ public class ValidationEnums {
     }
 
 
-    public enum Invalidity {
+    enum Invalidity {
         NONE("none"),
-        UNEXPECTED("is unexpected"),
-        FILE_DOESNT_EXIST("doesn't exist"),
-        IS_NULL("is null"),
-        IS_EMPTY("is empty"),
-        NOT_A_DIRECTORY("is not a directory"),
-        CONTAINER_FOLDER_DOESNT_EXIST("would be contained in a folder that still doesn't exist. " +
-                "You must create it first."),
-        IS_A_DIRECTORY("is a directory when it should be a file"),
+        ASSET_DOESNT_EXIST("refers to an asset file that doesn't exist"),
+        CONTAINER_FOLDER_DOESNT_EXIST("would be contained in a folder that still doesn't exist. You must create it first"),
         EXISTS_AS_NOT_DIRECTORY("already exists and is not a directory"),
+        FILE_DOESNT_EXIST("doesn't exist"),
+        IS_A_DIRECTORY("is a directory when it should be a file"),
+        IS_EMPTY("is empty"),
+        IS_NULL("is null"),
+        NOT_A_DIRECTORY("is not a directory"),
         NOT_SERIALIZABLE("is not serializable"),
-        ASSET_DOESNT_EXIST("refers to an asset file that doesn't exist");
+        UNEXPECTED("is unexpected"),
+        UNPARSEABLE_URI("refers to a file that couldn't be converted into an InputStream");
 
 
         public String invalidity;
@@ -65,34 +67,35 @@ public class ValidationEnums {
     }
 
 
-    public enum Method {
-        SAVE_BITMAP("saveBitmap(bitmap, destinationPath)"),
-        LOAD_BITMAP("loadBitmap(originPath)"),
-        LOAD_BITMAP_FROM_ASSETS("loadBitmapFromAssets(context, fileName)"),
-        SAVE_SHARED_PREFERENCES("saveSharedPreferences(sharedPreferences, destinationPath)"),
-        LOAD_SHARED_PREFERENCES("loadSharedPreferences(originPath)"),
-        LOAD_SHARED_PREFERENCES_2("loadSharedPreferences(originPath, sharedPreferences)"),
-        EXISTS("exists(pathToFile)"),
-        EXISTS_FILE("exists(file)"),
-        IS_VALID_FOR_SAVING("isValidForSaving(path)"),
-        DUPLICATE_FILE("duplicateFile(originPath, destinationPath)"),
-        DELETE_FILE("deleteFile(pathToFile)"),
+    enum Method {
         CLEAR_FOLDER("clearFolder(pathToFolder)"),
-        IS_FOLDER_EMPTY("isFolderEmpty(folder)"),
+        COPY_FROM_INPUTSTREAM("copyFromInputStream(originPath, inputStream, destinationPath)"),
         CREATE_FOLDER("createFolder(pathToFolder)"),
         CREATE_PATH("createPath(path)"),
-        GET_LONGEST_PATH("getLongestPath(path)"),
-        IS_DIRECTORY("isDirectory(path)"),
+        DELETE_FILE("deleteFile(pathToFile)"),
+        DUPLICATE_FILE("duplicateFile(originPath, destinationPath)"),
+        EXISTS("exists(pathToFile)"),
+        EXISTS_FILE("exists(file)"),
         GET_FILES_IN_DIRECTORY("getFilesInDirectory(folder)"),
         GET_FILE_TREE("getFileTree(folder)"),
-        COPY_FROM_INPUTSTREAM("copyFromInputStream(originPath, inputStream, destinationPath)"),
-        IMPORT_FROM_ASSETS("importFromAssets(context, fileName, destinationPath)"),
+        GET_LONGEST_PATH("getLongestPath(path)"),
         IMPORT_DATABASE_FROM_ASSETS("importDatabaseFromAssets(context, dataBaseName)"),
-        LOAD_TEXT_FILE("loadTextFile(originPath)"),
-        SAVE_TEXT_FILE("saveTextFile(text, destinationPath)"),
-        SAVE_OBJECT("saveObject(object, destinationPath)"),
+        IMPORT_FROM_ASSETS("importFromAssets(context, fileName, destinationPath)"),
+        IS_DIRECTORY("isDirectory(path)"),
+        IS_FOLDER_EMPTY("isFolderEmpty(folder)"),
+        IS_VALID_FOR_SAVING("isValidForSaving(path)"),
+        LOAD_BITMAP("loadBitmap(originPath)"),
+        LOAD_BITMAP_FROM_ASSETS("loadBitmapFromAssets(context, fileName)"),
+        LOAD_BITMAP_URI("loadBitmap(originUri)"),
         LOAD_OBJECT("loadObject(originPath, class)"),
-        SAVE_BYTE_ARRAY("saveByteArray(byteArray, destinationPath)");
+        LOAD_SHARED_PREFERENCES("loadSharedPreferences(originPath)"),
+        LOAD_SHARED_PREFERENCES_2("loadSharedPreferences(originPath, sharedPreferences)"),
+        LOAD_TEXT_FILE("loadTextFile(originPath)"),
+        SAVE_BITMAP("saveBitmap(bitmap, destinationPath)"),
+        SAVE_BYTE_ARRAY("saveByteArray(byteArray, destinationPath)"),
+        SAVE_OBJECT("saveObject(object, destinationPath)"),
+        SAVE_SHARED_PREFERENCES("saveSharedPreferences(sharedPreferences, destinationPath)"),
+        SAVE_TEXT_FILE("saveTextFile(text, destinationPath)");
 
 
         public String description;
