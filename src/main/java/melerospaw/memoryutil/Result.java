@@ -3,9 +3,6 @@ package melerospaw.memoryutil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import melerospaw.memoryutil.validation.ValidationInfoInterface;
-import melerospaw.memoryutil.validation.ValidationUtils;
-
 /**
  * <p>Contains the result of calling a method from {@link MemoryUtil}.</p>
  * <p><b>Fields:</b></p>

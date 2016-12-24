@@ -1,14 +1,14 @@
-package melerospaw.memoryutil.validation;
+package melerospaw.memoryutil;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import melerospaw.memoryutil.validation.ValidationEnums.Invalidity;
-import melerospaw.memoryutil.validation.ValidationEnums.Method;
-import melerospaw.memoryutil.validation.ValidationEnums.Parameter;
+import melerospaw.memoryutil.ValidationEnums.Invalidity;
+import melerospaw.memoryutil.ValidationEnums.Method;
+import melerospaw.memoryutil.ValidationEnums.Parameter;
 
-public class ValidationInfo implements ValidationInfoInterface{
+class ValidationInfo implements ValidationInfoInterface{
     
     private final Method method;
     private final HashMap<Parameter, Object> parameters;

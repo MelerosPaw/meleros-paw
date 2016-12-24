@@ -1,12 +1,12 @@
-package melerospaw.memoryutil.validation;
+package melerospaw.memoryutil;
 
 import java.util.HashMap;
 
-import melerospaw.memoryutil.validation.ValidationEnums.Invalidity;
-import melerospaw.memoryutil.validation.ValidationEnums.Method;
-import melerospaw.memoryutil.validation.ValidationEnums.Parameter;
+import melerospaw.memoryutil.ValidationEnums.Invalidity;
+import melerospaw.memoryutil.ValidationEnums.Method;
+import melerospaw.memoryutil.ValidationEnums.Parameter;
 
-public interface ValidationInfoInterface {
+interface ValidationInfoInterface {
     
     Method getMethod();
     Parameter getInvalidParameter();

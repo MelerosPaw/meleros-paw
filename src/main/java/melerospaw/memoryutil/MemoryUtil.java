@@ -28,8 +28,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import melerospaw.memoryutil.ExceptionManager.ExceptionType;
-import melerospaw.memoryutil.validation.ValidationInfoInterface;
-import melerospaw.memoryutil.validation.Validator;
 
 public class MemoryUtil {
 

@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 /**
  * Created by Juan José Melero on 26/08/2016.
  */
-public class StringUtil {
+class StringUtil {
 
-    static final String EMPTY = "";
+    public static final String EMPTY = "";
     private static final String formatPlaceholderRegEx = "\\%[0-9]*\\$(s|d)";
 
     /**

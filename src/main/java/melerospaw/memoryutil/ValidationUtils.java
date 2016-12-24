@@ -1,18 +1,17 @@
-package melerospaw.memoryutil.validation;
+package melerospaw.memoryutil;
 
 import android.support.annotation.NonNull;
 
 import java.io.File;
 
-import melerospaw.memoryutil.StringUtil;
-import melerospaw.memoryutil.validation.ValidationEnums.Invalidity;
+import melerospaw.memoryutil.ValidationEnums.Invalidity;
 
 /**
  * Created by Juan José Melero on 23/09/2016.
  */
-public class ValidationUtils {
+class ValidationUtils {
 
-    public static ValidationInfoInterface isPathValidForSaving(
+    static ValidationInfoInterface isPathValidForSaving(
             @NonNull File file, boolean isFolder, ValidationInfoInterface info) {
 
         Invalidity invalidity;
@@ -56,7 +55,7 @@ public class ValidationUtils {
         return info;
     }
 
-    public static String createErrorMessage(ValidationInfoInterface validationInfo){
+    static String createErrorMessage(ValidationInfoInterface validationInfo){
         return "You're calling " + validationInfo.getMethod().description
                 + ", but " + validationInfo.getInvalidParameter().description
                 +  " that you're passing " + validationInfo.getInvalidityType().invalidity

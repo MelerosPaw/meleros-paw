@@ -46,7 +46,7 @@ android {
 
 dependencies {
 //    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
     androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'org.testng:testng:6.9.12'
 //    androidTestCompile 'com.android.support.test:runer:0.5'

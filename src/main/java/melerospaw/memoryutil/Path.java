@@ -440,7 +440,7 @@ public class Path {
          * @return The {@link Environment} constant to refer the destination predefined directory.
          */
 
-        public String getEnvironmentDirectoryType(@ExternalDirectoryType String type) {
+        private String getEnvironmentDirectoryType(@ExternalDirectoryType String type) {
 
             String folderType;
 
@@ -507,6 +507,47 @@ public class Path {
          */
         public boolean canCreatePath() {
             return !TextUtils.isEmpty(mBasePath);
+        }
+
+
+        /**
+         * Creates a duplicate of this {@code Path.Builder} object. Use this method when you want to
+         * keep a {@code Path.Builder} as a reference to create different {@code Path} objects.
+         * For example, if you need to reference different files in a folder, you can create
+         * a {@code Path.Builder} referring to that folder and then clone it to call method
+         * {@code file()} on it.
+         *
+         * <pre>
+         * Path.Builder rootFolder = new Path.Builder(context)
+         *     .storageDirectory(Path.STORAGE_PUBLIC_EXTERNAL)
+         *     .folder("myFolder");
+         *
+         * Path myFile = rootFolder.file("myFile").build();
+         * doSomethingWithMyFile(myFile);
+         * MemoryUtil.clearFolder(rootFolder.build());
+         *
+         * // clearFolder() method will fail because you're trying to delete folder "myFolder"
+         * // using "rootFolder" object, but "rootFolder" object is not referencing "myFolder"
+         * // anymore since you've called file("myFile") on it in the previous lines, so now it's
+         * // referencing "myFile" instead. Therefore you should have cloned "rootFolder" previous
+         * // to calling file("myFile").
+         *
+         * Path myFile = rootFolder.getClone().file("myFile").build();
+         * doSomethingWithMyFile(myFile);
+         * MemoryUtil.clearFolder(rootFolder.build());
+         * </pre>
+         *
+         * @return
+         * The {@code Path.Builder} object cloned.
+         */
+        public Path.Builder getDuplicate() {
+
+            Builder builder = new Builder(this.context);
+            builder.mBasePath = this.mBasePath;
+            builder.mFolders = this.mFolders;
+            builder.mFileName = this.mFileName;
+
+            return builder;
         }
 
 

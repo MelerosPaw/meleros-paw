@@ -1,7 +1,5 @@
 package melerospaw.memoryutil;
 
-import melerospaw.memoryutil.validation.ValidationInfoInterface;
-
 class ExceptionManager {
 
     public enum ExceptionType{FILE_NOT_FOUND, IO_EXCEPTION}

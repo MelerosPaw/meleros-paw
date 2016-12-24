@@ -1,4 +1,4 @@
-package melerospaw.memoryutil.validation;
+package melerospaw.memoryutil;
 
 class ValidationEnums {
 

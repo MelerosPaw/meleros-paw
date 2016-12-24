@@ -5,9 +5,6 @@ import android.support.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import melerospaw.memoryutil.validation.ValidationInfoInterface;
-import melerospaw.memoryutil.validation.ValidationUtils;
-
 /**
  * Exception indicating that a parameter that you passed to a method was null/empty/useless but
  * it was essential for the method to work and should be corrected right away. Use this instead

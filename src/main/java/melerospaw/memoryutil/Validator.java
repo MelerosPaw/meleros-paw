@@ -1,4 +1,4 @@
-package melerospaw.memoryutil.validation;
+package melerospaw.memoryutil;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,17 +13,18 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import melerospaw.memoryutil.Path;
-import melerospaw.memoryutil.validation.ValidationEnums.Invalidity;
-import melerospaw.memoryutil.validation.ValidationEnums.Method;
-import melerospaw.memoryutil.validation.ValidationEnums.Parameter;
+import melerospaw.memoryutil.ValidationEnums.Invalidity;
+import melerospaw.memoryutil.ValidationEnums.Method;
+import melerospaw.memoryutil.ValidationEnums.Parameter;
 
-public class Validator implements ValidatorInterface {
+import static melerospaw.memoryutil.ValidationEnums.Method.COPY_FROM_INPUTSTREAM;
+
+class Validator implements ValidatorInterface {
 
     private final HashMap<Parameter, Object> parameters;
     private final Method method;
 
-    public Validator(HashMap<Parameter, Object> parameters, Method method) {
+    private Validator(HashMap<Parameter, Object> parameters, Method method) {
         this.parameters = parameters;
         this.method = method;
     }
@@ -109,16 +110,14 @@ public class Validator implements ValidatorInterface {
         if (invalidityAux != Invalidity.NONE) {
             invalidity = invalidityAux;
         } else {
-            switch (method) {
-                case COPY_FROM_INPUTSTREAM:
-                    if (new File(destinationPath).isDirectory()) {
-                        invalidity = Invalidity.IS_A_DIRECTORY;
-                    } else {
-                        invalidity = isValidForSaving(destinationPath, info);
-                    }
-                    break;
-                default:
+            if (method == Method.COPY_FROM_INPUTSTREAM) {
+                if (new File(destinationPath).isDirectory()) {
+                    invalidity = Invalidity.IS_A_DIRECTORY;
+                } else {
                     invalidity = isValidForSaving(destinationPath, info);
+                }
+            } else {
+                invalidity = isValidForSaving(destinationPath, info);
             }
         }
 
@@ -398,7 +397,7 @@ public class Validator implements ValidatorInterface {
     /*METHOD VALIDATION*/
     public static ValidationInfoInterface validateCopyFromInputStream(InputStream inputStream,
                                                                       Path destinationPath) {
-        Method method = Method.COPY_FROM_INPUTSTREAM;
+        Method method = COPY_FROM_INPUTSTREAM;
         HashMap<Parameter, Object> parameters = new HashMap<>(2);
         parameters.put(Parameter.INPUTSTREAM, inputStream);
         parameters.put(Parameter.DESTINATION_PATH_OBJECT, destinationPath);
@@ -408,7 +407,7 @@ public class Validator implements ValidatorInterface {
 
     public static ValidationInfoInterface validateCopyFromInputStream(InputStream inputStream,
                                                                       String destinationPath) {
-        Method method = Method.COPY_FROM_INPUTSTREAM;
+        Method method = COPY_FROM_INPUTSTREAM;
         HashMap<Parameter, Object> parameters = new HashMap<>(2);
         parameters.put(Parameter.INPUTSTREAM, inputStream);
         parameters.put(Parameter.DESTINATION_PATH, destinationPath);
