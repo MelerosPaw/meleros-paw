@@ -65,7 +65,7 @@ class ValidationInfo implements ValidationInfoInterface{
         while(it.hasNext()){
             Map.Entry<Parameter, Object> entry = it.next();
             String value = processValue(entry.getValue());
-            parameterList += "\t" + entry.getKey().parameter + ": " + value;
+            parameterList += "\t" + entry.getKey().parameterName + ": " + value;
             if (it.hasNext()){
                 parameterList +="\n";
             }

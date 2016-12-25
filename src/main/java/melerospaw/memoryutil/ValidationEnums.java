@@ -2,12 +2,20 @@ package melerospaw.memoryutil;
 
 class ValidationEnums {
 
+    private static final String DESTINATION_FOLDER = "destination folder";
+    private static final String DESTINATION_FOLDER_DESCRIPTION = "the destination folder";
+    private static final String ORIGIN_FOLDER = "origin folder";
+    private static final String ORIGIN_FOLDER_DESCRIPTION = "the origin folder";
+
     enum Parameter {
         BITMAP("Bitmap", "the bitmap"),
         BYTE_ARRAY("byte[]", "the byte[]"),
         CLASS("Class", "the class"),
         CONTEXT("Context", "the context"),
         DATABASE_NAME("data base name", "the data base name"),
+        DESTINATION_FOLDER_FILE(DESTINATION_FOLDER, DESTINATION_FOLDER_DESCRIPTION),
+        DESTINATION_FOLDER_PATH(DESTINATION_FOLDER, DESTINATION_FOLDER_DESCRIPTION),
+        DESTINATION_FOLDER_PATH_OBJECT(DESTINATION_FOLDER, DESTINATION_FOLDER_DESCRIPTION),
         DESTINATION_PATH("destination path", "the destination path"),
         DESTINATION_PATH_OBJECT("destination Path object", "the destination Path object"),
         FILE("File", "the file"),
@@ -15,6 +23,9 @@ class ValidationEnums {
         FOLDER("folder", "the folder"),
         INPUTSTREAM("InputStream", "the InputStream"),
         OBJECT("Object", "the object"),
+        ORIGIN_FOLDER_FILE(ORIGIN_FOLDER, ORIGIN_FOLDER_DESCRIPTION),
+        ORIGIN_FOLDER_PATH(ORIGIN_FOLDER, ORIGIN_FOLDER_DESCRIPTION),
+        ORIGIN_FOLDER_PATH_OBJECT(ORIGIN_FOLDER, ORIGIN_FOLDER_DESCRIPTION),
         ORIGIN_PATH("origin path", "the origin path"),
         ORIGIN_PATH_OBJECT("origin Path object", "the origin Path object"),
         ORIGIN_URI("origin uri", "the origin uri"),
@@ -22,24 +33,25 @@ class ValidationEnums {
         PATH_IN_URI("path in Uri", "the file referenced by the Uri"),
         PATH_OBJECT("Path object", "the Path object"),
         PATH_OBJECT_STRING("String path in origin Path object", "the String path contained in the origin Path object"),
-        PATH_OBJECT_TO_FILE("Path object pointing to file", "the Path object pointing to file"),
-        PATH_OBJECT_TO_FOLDER("Path object pointing to folder", "the Path object pointing to folder"),
+        PATH_OBJECT_TO_FILE("Path to file", "the Path object pointing to file"),
+        PATH_OBJECT_TO_FOLDER("Path to folder", "the Path object pointing to folder"),
         PATH_TO_FILE("path to file", "the path to file"),
         PATH_TO_FOLDER("path to folder", "the path to folder"),
         SHARED_PREFERENCES("SharedPreferences", "the SharedPreferences object"),
         TEXT("text", "the text"),
         UNEXPECTED_PARAMETER("unexpected parameter", "some of the parameters");
 
-        public String parameter;
-        public String description;
+        public final String parameterName;
+        public final String description;
 
-        Parameter(String parameter, String description) {
-            this.parameter = parameter;
+        Parameter(String parameterName, String description) {
+            this.parameterName = parameterName;
             this.description = description;
         }
 
+        @Override
         public String toString(){
-            return parameter;
+            return parameterName;
         }
     }
 
@@ -59,10 +71,10 @@ class ValidationEnums {
         UNPARSEABLE_URI("refers to a file that couldn't be converted into an InputStream");
 
 
-        public String invalidity;
+        public final String invalidityName;
 
-        Invalidity(String invalidity) {
-            this.invalidity = invalidity;
+        Invalidity(String invalidityName) {
+            this.invalidityName = invalidityName;
         }
     }
 
@@ -74,6 +86,7 @@ class ValidationEnums {
         CREATE_PATH("createPath(path)"),
         DELETE_FILE("deleteFile(pathToFile)"),
         DUPLICATE_FILE("duplicateFile(originPath, destinationPath)"),
+        DUPLICATE_FOLDER("duplicateFolder(originFolder, destinationFolder)"),
         EXISTS("exists(pathToFile)"),
         EXISTS_FILE("exists(file)"),
         GET_FILES_IN_DIRECTORY("getFilesInDirectory(folder)"),
@@ -98,7 +111,7 @@ class ValidationEnums {
         SAVE_TEXT_FILE("saveTextFile(text, destinationPath)");
 
 
-        public String description;
+        public final String description;
 
         Method(String description) {
             this.description = description;

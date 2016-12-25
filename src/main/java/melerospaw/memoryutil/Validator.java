@@ -18,6 +18,7 @@ import melerospaw.memoryutil.ValidationEnums.Method;
 import melerospaw.memoryutil.ValidationEnums.Parameter;
 
 import static melerospaw.memoryutil.ValidationEnums.Method.COPY_FROM_INPUTSTREAM;
+import static melerospaw.memoryutil.ValidationEnums.Parameter.FILE;
 
 class Validator implements ValidatorInterface {
 
@@ -45,8 +46,15 @@ class Validator implements ValidatorInterface {
                     case DESTINATION_PATH:
                         info = validateDestinationPath((String) value, info);
                         break;
+                    case DESTINATION_FOLDER_FILE:
+                        info = validateDestinationFolderFile((File) value, info);
+                        break;
+                    case DESTINATION_FOLDER_PATH:
+                        info = validateDestinationFolderPath((String) value, info);
+                        break;
+                    case ORIGIN_FOLDER_PATH:
                     case PATH_TO_FOLDER:
-                        info = validatePathToFolder((String) value, info);
+                        info = validatePathToFolder((String) value, parameter, info);
                         break;
                     case ORIGIN_URI:
                         info = validateOriginUri((Uri) value, info);
@@ -57,6 +65,8 @@ class Validator implements ValidatorInterface {
                     case ORIGIN_PATH_OBJECT:
                         info = validateOriginPathObject((Path) value, info);
                         break;
+                    case DESTINATION_FOLDER_PATH_OBJECT:
+                    case ORIGIN_FOLDER_PATH_OBJECT:
                     case DESTINATION_PATH_OBJECT:
                     case PATH_OBJECT_TO_FOLDER:
                     case BITMAP:
@@ -79,8 +89,9 @@ class Validator implements ValidatorInterface {
                     case DATABASE_NAME:
                         info = validateString((String) value, info, parameter);
                         break;
+                    case ORIGIN_FOLDER_FILE:
                     case FOLDER:
-                        info = validateFolder((File) value, info);
+                        info = validateFolder((File) value, parameter, info);
                         break;
                     case OBJECT:
                         info = validateObject(value, info);
@@ -184,7 +195,53 @@ class Validator implements ValidatorInterface {
     }
 
 
-    private ValidationInfoInterface validatePathToFolder(String pathToFolder,
+    private ValidationInfoInterface validateDestinationFolderFile(File destinationFolder,
+                                                                  ValidationInfoInterface info) {
+
+        Invalidity invalidity;
+        boolean isValid;
+
+        Invalidity invalidityAux = validateNull(destinationFolder);
+        if (invalidityAux != Invalidity.NONE) {
+            invalidity = invalidityAux;
+        } else if (destinationFolder.exists() && !destinationFolder.isDirectory()) {
+            invalidity = Invalidity.EXISTS_AS_NOT_DIRECTORY;
+        } else {
+            invalidity = Invalidity.NONE;
+        }
+
+        isValid = invalidity == Invalidity.NONE;
+        setValidationValues(info, Parameter.DESTINATION_FOLDER_FILE, invalidity, isValid);
+        return info;
+    }
+
+
+    private ValidationInfoInterface validateDestinationFolderPath(String destinationFolderPath,
+                                                                  ValidationInfoInterface info) {
+
+        Invalidity invalidity;
+        boolean isValid;
+
+        Invalidity invalidityAux = validateNullOrEmpty(destinationFolderPath);
+        if (invalidityAux != Invalidity.NONE) {
+            invalidity = invalidityAux;
+        } else {
+
+            File folder = new File(destinationFolderPath);
+            if (folder.exists() && !folder.isDirectory()) {
+                invalidity = Invalidity.EXISTS_AS_NOT_DIRECTORY;
+            } else {
+                invalidity = isValidForSaving(destinationFolderPath, info);
+            }
+        }
+
+        isValid = invalidity == Invalidity.NONE;
+        setValidationValues(info, Parameter.DESTINATION_FOLDER_PATH, invalidity, isValid);
+        return info;
+    }
+
+
+    private ValidationInfoInterface validatePathToFolder(String pathToFolder, Parameter parameter,
                                                          ValidationInfoInterface info) {
 
         Invalidity invalidity;
@@ -215,12 +272,13 @@ class Validator implements ValidatorInterface {
         }
 
         isValid = invalidity == Invalidity.NONE;
-        setValidationValues(info, Parameter.PATH_TO_FOLDER, invalidity, isValid);
+        setValidationValues(info, parameter, invalidity, isValid);
         return info;
     }
 
 
-    private ValidationInfoInterface validateFolder(File folder, ValidationInfoInterface info) {
+    private ValidationInfoInterface validateFolder(File folder, Parameter parameter,
+                                                   ValidationInfoInterface info) {
 
         Invalidity invalidity;
         boolean isValid;
@@ -237,7 +295,7 @@ class Validator implements ValidatorInterface {
         }
 
         isValid = invalidity == Invalidity.NONE;
-        setValidationValues(info, Parameter.FOLDER, invalidity, isValid);
+        setValidationValues(info, parameter, invalidity, isValid);
         return info;
     }
 
@@ -298,8 +356,7 @@ class Validator implements ValidatorInterface {
         Invalidity invalidity;
         boolean isValid;
 
-        String path = stringPath;
-        Invalidity invalidityAux = validateNullOrEmpty(path);
+        Invalidity invalidityAux = validateNullOrEmpty(stringPath);
         if (invalidityAux != Invalidity.NONE) {
             invalidity = invalidityAux;
         } else {
@@ -381,8 +438,12 @@ class Validator implements ValidatorInterface {
     }
 
     private Invalidity isValidForSaving(String path, ValidationInfoInterface info) {
+
+        boolean isFolder = info.getMethod() == Method.CREATE_FOLDER
+                || info.getMethod() == Method.DUPLICATE_FOLDER;
+
         ValidationInfoInterface infoAux =
-                ValidationUtils.isPathValidForSaving(new File(path), info.getMethod() == Method.CREATE_FOLDER, info);
+                ValidationUtils.isPathValidForSaving(new File(path), isFolder, info);
         return !infoAux.isValid() ? infoAux.getInvalidityType() : Invalidity.NONE;
     }
 
@@ -668,7 +729,7 @@ class Validator implements ValidatorInterface {
     public static ValidationInfoInterface validateExists(File file) {
         Method method = Method.EXISTS_FILE;
         HashMap<Parameter, Object> parameters = new HashMap<>(1);
-        parameters.put(Parameter.FILE, file);
+        parameters.put(FILE, file);
         Validator validator = new Validator(parameters, method);
         return validator.assertAreParametersValid();
     }
@@ -720,7 +781,7 @@ class Validator implements ValidatorInterface {
     public static ValidationInfoInterface validateDeleteFile(File file) {
         Method method = Method.DELETE_FILE;
         HashMap<Parameter, Object> parameters = new HashMap<>(1);
-        parameters.put(Parameter.FILE, file);
+        parameters.put(FILE, file);
         Validator validator = new Validator(parameters, method);
         return validator.assertAreParametersValid();
     }
@@ -745,6 +806,14 @@ class Validator implements ValidatorInterface {
         Method method = Method.IS_FOLDER_EMPTY;
         HashMap<Parameter, Object> parameters = new HashMap<>(1);
         parameters.put(Parameter.FOLDER, folder);
+        Validator validator = new Validator(parameters, method);
+        return validator.assertAreParametersValid();
+    }
+
+    public static ValidationInfoInterface validateCreateFolder(Path pathToFolder) {
+        Method method = Method.CREATE_FOLDER;
+        HashMap<Parameter, Object> parameters = new HashMap<>(1);
+        parameters.put(Parameter.PATH_OBJECT_TO_FOLDER, pathToFolder);
         Validator validator = new Validator(parameters, method);
         return validator.assertAreParametersValid();
     }
@@ -784,7 +853,7 @@ class Validator implements ValidatorInterface {
     public static ValidationInfoInterface validateIsDirectory(File file) {
         Method method = Method.IS_DIRECTORY;
         HashMap<Parameter, Object> parameters = new HashMap<>(1);
-        parameters.put(Parameter.FILE, file);
+        parameters.put(FILE, file);
         Validator validator = new Validator(parameters, method);
         return validator.assertAreParametersValid();
     }
@@ -801,6 +870,36 @@ class Validator implements ValidatorInterface {
         Method method = Method.GET_FILE_TREE;
         HashMap<Parameter, Object> parameters = new HashMap<>(1);
         parameters.put(Parameter.FOLDER, folder);
+        Validator validator = new Validator(parameters, method);
+        return validator.assertAreParametersValid();
+    }
+
+    public static ValidationInfoInterface validateDuplicateFolder(Path originFolder,
+                                                                  Path destinationFolder){
+        Method method = Method.DUPLICATE_FOLDER;
+        HashMap<Parameter, Object> parameters = new HashMap<>(2);
+        parameters.put(Parameter.ORIGIN_FOLDER_PATH_OBJECT, originFolder);
+        parameters.put(Parameter.DESTINATION_FOLDER_PATH_OBJECT, destinationFolder);
+        Validator validator = new Validator(parameters, method);
+        return validator.assertAreParametersValid();
+    }
+
+    public static ValidationInfoInterface validateDuplicateFolder(File originFolder,
+                                                                  File destinationFolder){
+        Method method = Method.DUPLICATE_FOLDER;
+        HashMap<Parameter, Object> parameters = new HashMap<>(2);
+        parameters.put(Parameter.ORIGIN_FOLDER_FILE, originFolder);
+        parameters.put(Parameter.DESTINATION_FOLDER_FILE, destinationFolder);
+        Validator validator = new Validator(parameters, method);
+        return validator.assertAreParametersValid();
+    }
+
+    public static ValidationInfoInterface validateDuplicateFolder(String originFolder,
+                                                                  String destinationFolder){
+        Method method = Method.DUPLICATE_FOLDER;
+        HashMap<Parameter, Object> parameters = new HashMap<>(2);
+        parameters.put(Parameter.ORIGIN_FOLDER_PATH, originFolder);
+        parameters.put(Parameter.DESTINATION_FOLDER_PATH, destinationFolder);
         Validator validator = new Validator(parameters, method);
         return validator.assertAreParametersValid();
     }

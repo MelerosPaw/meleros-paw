@@ -58,7 +58,7 @@ class ValidationUtils {
     static String createErrorMessage(ValidationInfoInterface validationInfo){
         return "You're calling " + validationInfo.getMethod().description
                 + ", but " + validationInfo.getInvalidParameter().description
-                +  " that you're passing " + validationInfo.getInvalidityType().invalidity
+                +  " that you're passing " + validationInfo.getInvalidityType().invalidityName
                 + ". Parameters for the call:\n" + validationInfo.getParameterListToString();
     }
 }

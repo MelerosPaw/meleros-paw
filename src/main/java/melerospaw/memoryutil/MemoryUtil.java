@@ -29,6 +29,8 @@ import java.util.StringTokenizer;
 
 import melerospaw.memoryutil.ExceptionManager.ExceptionType;
 
+import static melerospaw.memoryutil.StringUtil.EMPTY;
+
 public class MemoryUtil {
 
     private static final String TAG = MemoryUtil.class.getSimpleName();
@@ -38,7 +40,9 @@ public class MemoryUtil {
     private static final String ASSET_NOT_FOUND = "File %1$s was not found in assets directory.";
     private static final String BYTE_ARRAY_SAVED = "Byte array was saved to %1$s.";
     private static final String CANNOT_COPY = "Couldn't copy file %1$s to %2$s.";
-    private static final String CANNOT_CREATE = "Couldn't create folder %1$s.";
+    private static final String CANNOT_CREATE_FOLDER = "Couldn't create folder %1$s.";
+    private static final String CANNOT_CREATE_DESTIONATION_FOLDER = "Couldn't %1$s because it was impossible to create destination folder %2$s.";
+    private static final String IMPOSSIBLE_TO_CREATE_FOLDER = "Couldn't %1$s because it was impossible to create folder %2$s.";
     private static final String CANNOT_CREATE_OBJECT_FILE = "Cannot save the given object to file %1$s because there was an error while writing.";
     private static final String CANNOT_CREATE_OBJECT_INPUT_STREAM = "Cannot %1$s because it was not possible to create an ObjectOutputStream.";
     private static final String CANNOT_DELETE = "File %1$s couldn't be deleted.";
@@ -49,7 +53,8 @@ public class MemoryUtil {
     private static final String CLEAR_FOLDER = "clear folder %1$s";
     private static final String COPY_FROM_INPUT_STREAM = "copy %1$s from an InputStream";
     private static final String COULD_NOT_CREATE_PATH = "Could not create path %1$s.";
-    private static final String CREATED = "Folder %1$s was created.";
+    private static final String CREATE_FOLDER = "create folder %1$s";
+    private static final String FOLDER_CREATED = "Folder %1$s was created.";
     private static final String DELETED_BUT_STILL_NOT_EMPTY = "All files in folder %1$s were deleted but still it's not empty.";
     private static final String DELETE_FILE = "delete file %1$s";
     private static final String DESTINATION_FILE_NOT_FOUND = "Cannot %1$s because destination file %2$s was not found.";
@@ -100,6 +105,9 @@ public class MemoryUtil {
     private static final String NULL_FILE_FROM_URI = "Cannot %1$s because the bitmap obtained from %2$s happens to be null. The uri may not be referencing an image.";
     private static final String LOAD_BITMAP_FROM_URI = "load bitmap from uri %1$s";
     private static final String BITMAP_LOADED_FROM_URI = "Bitmap was loaded from uri %1$s.";
+    public static final String FOLDER_DUPLICATED = "Folder %1$s was duplicated to %2$s.";
+    public static final String DUPLICATE_FOLDER = "duplicate folder %1$s";
+    public static final String CANNOT_DUPLICATE_FILE = "Cannot %1$s because file %2$s could not be duplicated.";
 
 
     /**
@@ -179,7 +187,7 @@ public class MemoryUtil {
 
             } catch (FileNotFoundException e) {
                 result = Result.createUnsuccessfulResult(DESTINATION_FOLDER_NOT_FOUND, e,
-                        destinationPath, StringUtil.format(COPY_FROM_INPUT_STREAM, StringUtil.EMPTY));
+                        destinationPath, StringUtil.format(COPY_FROM_INPUT_STREAM, EMPTY));
             }
         }
         return result;
@@ -396,7 +404,7 @@ public class MemoryUtil {
                 }
             } catch (IOException e) {
                 result = Result.createUnsuccessfulResult(DESTINATION_FOLDER_NOT_FOUND, e,
-                        destinationPath, StringUtil.format(SAVE_TEXT_TO_FILE, StringUtil.EMPTY));
+                        destinationPath, StringUtil.format(SAVE_TEXT_TO_FILE, EMPTY));
             }
         }
 
@@ -833,7 +841,7 @@ public class MemoryUtil {
         Result<Bitmap> result;
 
         ValidationInfoInterface info = Validator.validateLoadBitmap(context, originUri);
-        if (!info.isValid()){
+        if (!info.isValid()) {
             result = reportInvalidParameter(info);
         } else {
             try {
@@ -1287,6 +1295,128 @@ public class MemoryUtil {
     }
 
 
+    /**
+     * Duplicates a folder and all its content. Intermediate folders will created for you.
+     *
+     * @param originFolder      Folder to be copied.
+     * @param destinationFolder The resulting folder. It isn't the folder that will contain the
+     *                          {@code originFolder} copy, but the originFolder copy itself.
+     * @return A {@code Result} containing the resulting destination {@code File}.
+     */
+    public static Result<File> duplicateFolder(@NonNull Path originFolder,
+                                               @NonNull Path destinationFolder) {
+
+        Result<File> result;
+
+        ValidationInfoInterface info = Validator.validateDuplicateFolder(originFolder,
+                destinationFolder);
+        if (!info.isValid()) {
+            result = reportInvalidParameter(info);
+        } else if (createPath(destinationFolder)){
+            result = MemoryUtil.duplicateFolder(originFolder.getPath(), destinationFolder.getPath());
+        } else {
+            result = Result.createNoExceptionResult(FAILED,
+                    StringUtil.format(DUPLICATE_FOLDER, originFolder.getPath()));
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Duplicates a folder and all its content.
+     *
+     * @param originFolder      Folder to be copied.
+     * @param destinationFolder The resulting folder. It isn't the folder that will contain the
+     *                          {@code originFolder} copy, but the originFolder copy itself. You
+     *                          must make sure that intermediate folders exist or else this method
+     *                          will fail.
+     * @return A {@code Result} containing the resulting destination {@code File}.
+     */
+    public static Result<File> duplicateFolder(@NonNull File originFolder,
+                                               @NonNull File destinationFolder) {
+
+        Result<File> result;
+
+        ValidationInfoInterface info = Validator.validateDuplicateFolder(originFolder,
+                destinationFolder);
+        if (!info.isValid()) {
+            result = reportInvalidParameter(info);
+        } else {
+            result = MemoryUtil.duplicateFolder(originFolder.getPath(), destinationFolder.getPath());
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Duplicates a folder and all its content.
+     *
+     * @param originFolder      Folder to be copied.
+     * @param destinationFolder The resulting folder. It isn't the folder that will contain the
+     *                          {@code originFolder} copy, but the originFolder copy itself. You
+     *                          must make sure that intermediate folders exist or else this method
+     *                          will fail.
+     * @return A {@code Result} containing the resulting destination {@code File}.
+     */
+    public static Result<File> duplicateFolder(String originFolder, String destinationFolder) {
+
+        Result<File> result;
+
+        ValidationInfoInterface info = Validator.validateDuplicateFolder(originFolder,
+                destinationFolder);
+        if (!info.isValid()) {
+            result = reportInvalidParameter(info);
+        } else {
+
+            File originFile = new File(originFolder);
+            File destinationFile = new File(destinationFolder);
+
+            destinationFile.mkdir();
+            if (!destinationFile.exists()) {
+                result = Result.createNoExceptionResult(CANNOT_CREATE_DESTIONATION_FOLDER,
+                        StringUtil.format(DUPLICATE_FOLDER, originFolder), destinationFolder);
+            } else if (originFile.listFiles().length == 0) {
+                result = Result.createSuccessfulResult(destinationFile, FOLDER_DUPLICATED,
+                        originFolder, destinationFolder);
+            } else {
+
+                boolean fileCopied;
+                String currentFilePath;
+                int i = 0;
+
+                do {
+                    File file = originFile.listFiles()[i];
+                    currentFilePath = file.getPath();
+                    File newDestinationFile = new File(destinationFile.getPath()
+                            + File.separator + file.getName());
+                    if (file.isDirectory()) {
+                        fileCopied = duplicateFolder(file.getPath(), newDestinationFile.getPath()).isSuccessful();
+                    } else {
+                        fileCopied = MemoryUtil.duplicateFile(file.getPath(),
+                                newDestinationFile.getPath()).isSuccessful();
+                    }
+
+                    i++;
+
+                } while (fileCopied && i < originFile.listFiles().length);
+
+                if (fileCopied) {
+                    result = Result.createSuccessfulResult(destinationFile, FOLDER_DUPLICATED,
+                            originFolder, destinationFolder);
+                } else {
+                    result = Result.createNoExceptionResult(CANNOT_DUPLICATE_FILE,
+                            StringUtil.format(DUPLICATE_FOLDER, originFolder),
+                            currentFilePath);
+                }
+            }
+        }
+
+        return result;
+    }
+
+
     // INCLUDED
 
     /**
@@ -1553,9 +1683,93 @@ public class MemoryUtil {
     // INCLUDED
 
     /**
+     * Creates the folders necessary to generate the path.
+     *
+     * @param path Contains the path to create.
+     * @return The path to the file if it could be created or {@code null} if it couldn't.
+     */
+    private static boolean createPath(@NonNull Path path) {
+
+        boolean pathCreated = false;
+
+        ValidationInfoInterface info = Validator.validateCreatePath(path);
+        if (!info.isValid()) {
+            reportInvalidParameter(info);
+        } else {
+            if (path.getFolders().isEmpty()) {
+                pathCreated = true;
+                log(PATH_CONTAINED_NO_FOLDERS, true);
+            } else {
+                pathCreated = createFolder(path).isSuccessful();
+                if (pathCreated) {
+                    log(StringUtil.format(PATH_CREATED, path.getFolders().toString()), true);
+                } else {
+                    log(StringUtil.format(COULD_NOT_CREATE_PATH, path.getPath()), false);
+                }
+            }
+        }
+
+        return pathCreated;
+    }
+
+
+    /**
      * Creates folder {@code pathToFolder}.
      *
-     * @param pathToFolder Path to the folder including the folder parameter.
+     * @param pathToFolder Path to the folder including the folder parameter. Every folder
+     *                     specified during the {@link Path} creation will be created.
+     * @return A {@code Result<File>} whose method {@link Result#isSuccessful()} returns
+     * {@code true} if the folder was created or already existed, or {@code false} if the folder
+     * could not be created.
+     */
+    public static Result<File> createFolder(@NonNull Path pathToFolder) {
+
+        Result<File> result;
+
+        ValidationInfoInterface info = Validator.validateCreateFolder(pathToFolder);
+        if (!info.isValid()) {
+            result = reportInvalidParameter(info);
+        } else {
+
+            boolean pathCreated = false;
+            String conflictFolder = StringUtil.EMPTY;
+            String basePath = pathToFolder.getBasePath();
+
+            for (String folderName : pathToFolder.getFolders()) {
+                String folderPath = basePath + "/" + folderName;
+                Result<File> folderCreatedResult = createFolder(folderPath);
+
+                if (folderCreatedResult.isSuccessful()) {
+                    basePath = folderPath;
+                    pathCreated = true;
+                } else {
+                    conflictFolder = folderName;
+                    pathCreated = false;
+                    break;
+                }
+            }
+
+            if (pathCreated) {
+                result = Result.createSuccessfulResult(pathToFolder.getFile(), FOLDER_CREATED,
+                        pathToFolder.getPath());
+            } else {
+                result = Result.createNoExceptionResult(IMPOSSIBLE_TO_CREATE_FOLDER,
+                        StringUtil.format(CREATE_FOLDER, pathToFolder.getPath()), conflictFolder);
+            }
+        }
+
+        return result;
+    }
+
+
+    // INCLUDED
+
+    /**
+     * Creates folder {@code pathToFolder}.
+     *
+     * @param pathToFolder Path to the folder including the folder parameter. You must make sure
+     *                     that all folders before the referrenced folder exists, or else this
+     *                     method will fail.
      * @return A {@code Result<File>} whose method {@link Result#isSuccessful()} returns
      * {@code true} if the folder was created or already existed, or {@code false} if the folder
      * could not be created.
@@ -1574,61 +1788,14 @@ public class MemoryUtil {
             } else {
                 boolean created = folderFile.mkdir();
                 if (created) {
-                    result = Result.createSuccessfulResult(folderFile, CREATED, pathToFolder);
+                    result = Result.createSuccessfulResult(folderFile, FOLDER_CREATED, pathToFolder);
                 } else {
-                    result = Result.createNoExceptionResult(CANNOT_CREATE, pathToFolder);
+                    result = Result.createNoExceptionResult(CANNOT_CREATE_FOLDER, pathToFolder);
                 }
             }
         }
 
         return result;
-    }
-
-
-    // INCLUDED
-
-    /**
-     * Creates the folders necessary to generate the path.
-     *
-     * @param path Contains the path to create.
-     * @return The path to the file if it could be created or {@code null} if it couldn't.
-     */
-    public static boolean createPath(@NonNull Path path) {
-
-        boolean pathCreated = false;
-
-        ValidationInfoInterface info = Validator.validateCreatePath(path);
-        if (!info.isValid()) {
-            reportInvalidParameter(info);
-        } else {
-            if (path.getFolders().isEmpty()) {
-                pathCreated = true;
-                log(PATH_CONTAINED_NO_FOLDERS, true);
-            } else {
-                String basePath = path.getBasePath();
-
-                for (String folderName : path.getFolders()) {
-                    String folderPath = basePath + "/" + folderName;
-                    Result<File> folderCreatedResult = createFolder(folderPath);
-
-                    if (folderCreatedResult.isSuccessful()) {
-                        basePath = folderPath;
-                        pathCreated = true;
-                    } else {
-                        pathCreated = false;
-                        break;
-                    }
-                }
-
-                if (pathCreated) {
-                    log(StringUtil.format(PATH_CREATED, path.getFolders().toString()), true);
-                } else {
-                    log(StringUtil.format(COULD_NOT_CREATE_PATH, path.getPath()), false);
-                }
-            }
-        }
-
-        return pathCreated;
     }
 
 
@@ -1657,7 +1824,7 @@ public class MemoryUtil {
         ValidationInfoInterface info = Validator.validateGetLongestPath(path);
         if (!info.isValid()) {
             reportInvalidParameter(info);
-            longestValidPath = StringUtil.EMPTY;
+            longestValidPath = EMPTY;
         } else {
             File file = new File(path);
             if (file.exists()) {
@@ -1749,7 +1916,7 @@ public class MemoryUtil {
         ValidationInfoInterface info = Validator.validateGetFilesInDirectory(folder);
         if (!info.isValid()) {
             reportInvalidParameter(info);
-            filesInDirectory.append(StringUtil.EMPTY);
+            filesInDirectory.append(EMPTY);
         } else {
             if (folder.list().length > 0) {
                 int filesAmount = folder.listFiles().length;
@@ -1763,7 +1930,7 @@ public class MemoryUtil {
                     }
                 }
             } else {
-                filesInDirectory.append(StringUtil.EMPTY);
+                filesInDirectory.append(EMPTY);
             }
         }
 
