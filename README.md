@@ -13,18 +13,18 @@ compile 'com.meleros-paw:memoryutil:1.0.1'
 Then you can start calling _MemoryUtil_'s methods passing a _Path_ to the files needed. Methods will then return a _Result_ containing a boolean to tell you whether the operation was successful or not, and the objects requested. Here's a quick example about how to save an object:
 
 ```java
-    CustomObject myCustomObject;
+CustomObject myCustomObject;
 
-    Path path = new Path.Builder(context)
-        .storageDirectory(Path.STORAGE_PUBLIC_EXTERNAL)
-        .folder("mySavedObjects")
-        .file("myCustomObject")
-        .build();
+Path path = new Path.Builder(context)
+    .storageDirectory(Path.STORAGE_PUBLIC_EXTERNAL)
+    .folder("mySavedObjects")
+    .file("myCustomObject")
+    .build();
 
-    Result<File> result = MemoryUtils.saveObject(path, myCustomObject);
-    if (result.isSuccessful){
-       // Object has been saved to folder mySavedObjects in external public directory
-    }
+Result<File> result = MemoryUtils.saveObject(path, myCustomObject);
+if (result.isSuccessful){
+   // Object has been saved to folder mySavedObjects in external public directory
+}
 ```
 
 _Path_ class methods uses the **system's own methods** to get the path to the storage directory, so it will not get deprecated through time, wich may happen if you hardcode your paths. In addition, the entry **parameters are validated** and exceptions will be thrown if you ever call a method using invalid parameters so you'll never let wrong calls to go unnoticed.
