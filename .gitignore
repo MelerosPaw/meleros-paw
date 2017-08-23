@@ -1,4 +1,3 @@
 build
-memoryutil.iml
 src/androidTest
-src/test
+*.iml
