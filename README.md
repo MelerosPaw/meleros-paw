@@ -7,7 +7,7 @@ MemoryUtil consists of a set of methods to perform a variety of recurrent operat
 Import the library to your proyect from JCenter by adding this line to your module's _build.gradle_ file:
 
 ```groovy
-compile 'com.meleros-paw:memoryutil:1.0.1'
+compile 'com.meleros-paw:memoryutil:1.1.3'
 ```
 
 Then you can start calling _MemoryUtil_'s methods passing a _Path_ to the files needed. Methods will then return a _Result_ containing a boolean to tell you whether the operation was successful or not, and the objects requested. Here's a quick example about how to save an object:
