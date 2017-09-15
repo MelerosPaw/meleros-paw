@@ -20,7 +20,7 @@ import java.util.LinkedList;
  */
 public class Path {
 
-    public static final String TAG = Path.class.getSimpleName();
+    private static final String TAG = Path.class.getSimpleName();
 
     public static final int STORAGE_PRIVATE_INTERNAL = 0;
     public static final int STORAGE_PRIVATE_EXTERNAL = 1;
@@ -155,7 +155,6 @@ public class Path {
         return stringBuilder.toString();
     }
 
-
     /**
      * Returns the path from a {@code Path} object or an empty {@code String} if the Path is
      * null.
@@ -167,7 +166,6 @@ public class Path {
     static String getPathOrNull(Path path) {
         return path == null ? null : path.getPath();
     }
-
 
     /**
      * Returns a {@code File} pointing to the path contained in this {@code Path} object
@@ -296,7 +294,6 @@ public class Path {
             return this;
         }
 
-
         /**
          * Sets the base path to the application's external or internal directory.
          *
@@ -319,7 +316,6 @@ public class Path {
             return this;
         }
 
-
         /**
          * Sets the base path to the application's database directory.
          *
@@ -331,7 +327,6 @@ public class Path {
             return this;
         }
 
-
         /**
          * Returns the path to the application's public external directory in an Android device.
          *
@@ -341,7 +336,6 @@ public class Path {
         protected String usePublicExternalDirectory() {
             return Environment.getExternalStorageDirectory().getPath();
         }
-
 
         /**
          * Returns the path to the application's public external directory in an Android
@@ -376,7 +370,6 @@ public class Path {
             return context.getFilesDir().getPath();
         }
 
-
         /**
          * Returns the path to the application's private external directory in an Android
          * device.
@@ -392,7 +385,6 @@ public class Path {
                 return StringUtil.EMPTY;
             }
         }
-
 
         /**
          * Returns the path to the application's private external directory in an Android
@@ -415,7 +407,6 @@ public class Path {
             }
         }
 
-
         /**
          * Returns the path to the applications's database directory in an Android device.
          *
@@ -426,7 +417,6 @@ public class Path {
         protected String useDatabaseDirectory(String databaseName) {
             return context.getDatabasePath(databaseName).getPath();
         }
-
 
         /**
          * Returns the {@link Environment} constant for the path to the given predefined external
@@ -499,7 +489,6 @@ public class Path {
             }
         }
 
-
         /**
          * Tells whether the specified path can be created.
          *
@@ -508,7 +497,6 @@ public class Path {
         public boolean canCreatePath() {
             return !TextUtils.isEmpty(mBasePath);
         }
-
 
         /**
          * Creates a duplicate of this {@code Path.Builder} object. Use this method when you want to
@@ -540,16 +528,55 @@ public class Path {
          * @return
          * The {@code Path.Builder} object cloned.
          */
-        public Path.Builder getDuplicate() {
+        public Path.Builder duplicate() {
 
             Builder builder = new Builder(this.context);
             builder.mBasePath = this.mBasePath;
-            builder.mFolders = this.mFolders;
+            builder.mFolders = new LinkedList<>(this.mFolders);
             builder.mFileName = this.mFileName;
 
             return builder;
         }
 
+        /**
+         * Creates a duplicate of this {@code Path.Builder} object. Use this method when you want to
+         * keep a {@code Path.Builder} as a reference to create different {@code Path} objects.
+         * For example, if you need to reference different files in a folder, you can create
+         * a {@code Path.Builder} referring to that folder and then clone it to call method
+         * {@code file()} on it.
+         *
+         * <pre>
+         * Path.Builder rootFolder = new Path.Builder(context)
+         *     .storageDirectory(Path.STORAGE_PUBLIC_EXTERNAL)
+         *     .folder("myFolder");
+         *
+         * Path myFile = rootFolder.file("myFile").build();
+         * doSomethingWithMyFile(myFile);
+         * MemoryUtil.clearFolder(rootFolder.build());
+         *
+         * // clearFolder() method will fail because you're trying to delete folder "myFolder"
+         * // using "rootFolder" object, but "rootFolder" object is not referencing "myFolder"
+         * // anymore since you've called file("myFile") on it in the previous lines, so now it's
+         * // referencing "myFile" instead. Therefore you should have cloned "rootFolder" previous
+         * // to calling file("myFile").
+         *
+         * Path myFile = rootFolder.getClone().file("myFile").build();
+         * doSomethingWithMyFile(myFile);
+         * MemoryUtil.clearFolder(rootFolder.build());
+         * </pre>
+         *
+         * @return
+         * The {@code Path.Builder} object cloned.
+         */
+        public static Path.Builder duplicate(Path.Builder originBuilder) {
+
+            Builder newBuilder = new Builder(originBuilder.context);
+            newBuilder.mBasePath = originBuilder.mBasePath;
+            newBuilder.mFolders = new LinkedList<>(originBuilder.mFolders);
+            newBuilder.mFileName = originBuilder.mFileName;
+
+            return newBuilder;
+        }
 
         @Override
         public String toString() {

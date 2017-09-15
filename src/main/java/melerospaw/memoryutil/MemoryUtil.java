@@ -703,7 +703,7 @@ public class MemoryUtil {
 
     // INCLUDED
 
-    /**********************************************************************************************
+    /**
      * Saves a {@code Bitmap} to the device. This method stores a Bitmap in memory as a file, since
      * it cannot be stored as an object, for it cannot implement {@link Serializable}.
      *
@@ -735,7 +735,7 @@ public class MemoryUtil {
 
     // INCLUDED
 
-    /**********************************************************************************************
+    /**
      * Saves a {@code Bitmap} to the device. This method stores a Bitmap in memory as a file, since
      * it cannot be stored as an object, for it cannot implemente {@link Serializable}.
      *
@@ -2002,7 +2002,7 @@ public class MemoryUtil {
      * @param path The path to the file whose container folder we want to get.
      */
     private static String getContainerFolder(@NonNull String path) {
-        return path.substring(0, path.lastIndexOf("/"));
+        return path.substring(0, path.lastIndexOf('/'));
     }
 
 
